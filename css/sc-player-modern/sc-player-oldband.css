@@ -1,0 +1,146 @@
+/* ----------< SC-Player OldBand Skeletion >---------------- */
+
+@import url('../sc-player-base.css');
+
+.sc-player-oldband {
+	--bar-fill: #a1a1a1; --slider-w: 18px;
+	--txt-col1: #6e6e6e; --vol-vpad: 23px;
+	--art-fill: #fbfdff;
+	--bg1-fill: #eee;
+	--bg2-fill: #fff;
+	--vol-lean: url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 138 33" fill="none" stroke="rgb(161,161,161)" stroke-width="2"><path d="M 137,2 0,32 h 137 z"/></svg>');
+	--vol-full: url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 138 33" stroke="none" fill="rgb(161,161,161)" stroke-width="2"><path d="M 137,2 0,32 h 137 z"/></svg>');
+}
+.sc-player-oldband {
+	font: .7em sans-serif;
+	margin: 5px;
+	border-radius: 2px;
+	background-color: var(--bg1-fill);
+	box-shadow: 5px 5px 10px rgba(0,0,0,.4), inset 0 0 20px rgba(0,0,0,.1);
+	color: var(--txt-col1);
+}
+.sc-player-oldband .sc-box-controls {
+	padding: 5px;
+	right: 0;
+}
+
+/*  Artwork  */
+.sc-player-oldband .sc-artwork {
+	background: url('img/melody-icon.svg') no-repeat center / 60%;
+	background-color: var(--art-fill);
+	box-shadow: 0 1px 2px rgba(0,0,0,.4);
+	width: 100px;
+	height: 100px;
+	position: relative;
+}
+
+/* Toggle Play/Pause */
+.sc-player-oldband .sc-play-toggle {
+	position: absolute;
+	height: 40px; top: 10px;
+	width: 40px; right: 10px;
+	filter: invert(30%);
+	background: url('img/play-modern.svg') no-repeat center;
+}
+.sc-player-oldband .S-played:not(.S-paused) > .sc-play-toggle {
+	background-image: url('img/pause-modern.svg');
+}
+
+/* Toggle Play/Pause */
+.sc-player-oldband .sc-time-scale {
+	left: 110px; bottom: 5px;
+	right: 5px; height: 10px;
+	outline: 1px solid var(--bar-fill);
+	border: 1px solid var(--bg1-fill);
+	position: absolute;
+}
+.sc-player-oldband .sc-time-indicators {
+	bottom: var(--vol-vpad);
+	right: 5px;
+	position: absolute;
+}
+.sc-player-oldband .sc-time-indicators:not([data-duration]) {
+	content: '- -:- -';
+}
+.sc-player-oldband .sc-waveform {
+	padding-left: var(--slider-w);
+	background: linear-gradient(90deg, var(--bar-fill) var(--slider-w), transparent var(--slider-w));
+}
+.sc-player-oldband .sc-bar-plying {
+	background-color: var(--bar-fill);
+}
+.sc-player-oldband .sc-bar-plying:after {
+	content: '';
+	width: var(--slider-w);
+	height: 12px; top: -2px; right: 0;
+	background-color: var(--bg2-fill);
+	box-shadow: 0 1px 2px rgba(0,0,0,.2);
+	border: 1px solid var(--bar-fill);
+	border-radius: 2px;
+	position: absolute;
+	display: block;
+	cursor: pointer;
+}
+
+/* Tracks List */
+.sc-player-oldband .sc-tracklist {
+	width: 340px; height: 240px;
+	margin-top: 110px;
+	border-top: 2px double var(--bar-fill);
+}
+.sc-player-oldband .sc-track {
+	padding: 3px 35px 3px 5px;
+	margin: 1px 2px;
+	border: 1px solid var(--bg1-fill);
+	border-radius: 2px;
+}
+.sc-player-oldband .sc-track:nth-child(odd) {
+	background-color: var(--bg2-fill);
+}
+.sc-player-oldband .sc-track:after {
+	text-align: right;
+	padding: 0 5px;
+	margin-left: 5px;
+	top: 3px; right: 0;
+	position: absolute;
+}
+.sc-player-oldband .sc-track:hover {
+	background-color: var(--bar-fill);
+	color: var(--bg2-fill);
+}
+.sc-player-oldband .sc-track.S-active {
+	background-color: var(--txt-col1);
+	outline: 1px solid var(--bar-fill);
+	color: var(--bg1-fill);
+	font-weight: bold;
+}
+
+/* Volume Slider */
+.sc-player-oldband .sc-volume {
+	position: absolute;
+	background: var(--vol-lean) no-repeat top center / 100%;
+	left: 115px; bottom: var(--vol-vpad);
+	width: 70px; height: 17px;
+}
+.sc-player-oldband .sc-bar-volume {
+	background: var(--vol-full) no-repeat bottom center / 100%;
+}
+.sc-player-oldband .sc-volume:before {
+	content: '';
+	position: absolute;
+	top: 0; left: 100%;
+	padding: 8.5px;
+	cursor: pointer;
+	filter: invert(30%);
+	background: url('img/info-modern.svg') no-repeat top right / 200%;
+}
+.sc-player-oldband .sc-volume:after {
+	content: '|';
+	position: absolute;
+	top: 0; left: -5px;
+	cursor: pointer;
+}
+.sc-player-oldband .sc-volume.S-hook:after {
+	content: '' attr(data-percent) '%';
+	padding-right: 2px;
+}

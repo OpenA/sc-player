@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 33 20">
+	<g fill="#5f5f5f">
+		<path d="M 15,10 0,20 V 0 Z"/>
+		<path d="M 29,10 14,20 V 0 Z"/>
+		<path d="m 28,0 v 20 h 5 V 0 Z"/>
+	</g>
+</svg>

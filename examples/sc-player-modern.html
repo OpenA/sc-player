@@ -6,21 +6,26 @@
 		<link rel="stylesheet" href="styles/sc-player-modern.css" type="text/css">
 		<script type="text/javascript" src="../js/sc-player.js"></script>
 		<link rel="stylesheet" type="text/css" href="../css/sc-player-modern/sc-player-modern.css">
+		<link rel="stylesheet" type="text/css" href="../css/sc-player-modern/sc-player-oldband.css">
 	</head>
 	<body>
 		<a class="standart-player" href="sc-player-standard.html">Standart Player</a>
 		<h1>Modern Player</h1>
-		<div class="fx-horiz"></div>
+		<div id="fx-horiz">
+			<div class="fx-cell"></div>
+			<div class="fx-cell"></div>
+		</div>
 		<script type="text/javascript">
-			const fx = document.body.querySelector('.fx-horiz');
-			const sp = new SCPlayer({ theme: 'modern' });
+			const fx = document.getElementById('fx-horiz');
+			const sp = new SCPlayer({ theme: 'modern'  });
 			const wp = new SCPlayer({ theme: 'oldband' });
 
-			fx.append(sp,wp);
+			fx.children[0].append(wp);
+			fx.children[1].append(sp);
 		</script>
 		<div class="footer">
 			<h2>minimalistic skin for the dynamic insertion</h2>
-			<a href="https://github.com/OpenA/soundcloud-custom-player">GitHub</a>
+			<a href="https://github.com/OpenA/sc-player">GitHub</a>
 		</div>
 	</body>
  </html>

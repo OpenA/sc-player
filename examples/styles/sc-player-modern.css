@@ -26,6 +26,14 @@ h2 {
 .footer a:hover {
 	color: #5e7681;
 }
+
+.fx-cell {
+	margin-right: 1em;
+}
+#fx-horiz {
+	display: flex;
+}
+
 .standart-player {
 	padding: 1em;
 	background: #838383;
