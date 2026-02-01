@@ -5,7 +5,7 @@
 .sc-player-oldband {
 	--bar-fill: #a1a1a1; --slider-w: 18px;
 	--txt-col1: #6e6e6e; --vol-vpad: 23px;
-	--art-fill: #fbfdff;
+	--art-fill: #fbfdff; --re-color: invert(40%);
 	--bg1-fill: #eee;
 	--bg2-fill: #fff;
 	--vol-lean: url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 138 33" fill="none" stroke="rgb(161,161,161)" stroke-width="2"><path d="M 137,2 0,32 h 137 z"/></svg>');
@@ -39,7 +39,7 @@
 	position: absolute;
 	height: 40px; top: 10px;
 	width: 40px; right: 10px;
-	filter: invert(30%);
+	filter: var(--re-color);
 	background: url('img/play-modern.svg') no-repeat center;
 }
 .sc-player-oldband .S-played:not(.S-paused) > .sc-play-toggle {
@@ -125,19 +125,27 @@
 .sc-player-oldband .sc-bar-volume {
 	background: var(--vol-full) no-repeat bottom center / 100%;
 }
+.sc-player-oldband .sc-volume:after,
 .sc-player-oldband .sc-volume:before {
 	content: '';
 	position: absolute;
 	top: 0; left: 100%;
 	padding: 8.5px;
 	cursor: pointer;
-	filter: invert(30%);
+	filter: var(--re-color);
 	background: url('img/info-modern.svg') no-repeat top right / 200%;
 }
 .sc-player-oldband .sc-volume:after {
-	content: '|';
+	left: -9px;
+	background-position-x: left;
+}
+
+.sc-player-oldband .sc-cover-slide {
+	user-select: none;
+	background: rgba(0,0,0,.4) url('img/down-angle.svg') no-repeat center / 20%;
 	position: absolute;
-	top: 0; left: -5px;
+	top: 92px; height: 13px;
+	left: 5px; width: 100px;
 	cursor: pointer;
 }
 .sc-player-oldband .sc-volume.S-hook:after {

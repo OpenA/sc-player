@@ -107,11 +107,13 @@
 }
 
 /* Info button + Timer digits */
+.sc-player-standart .sc-cover-slide,
 .sc-player-standart .sc-info-toggle,
 .sc-player-standart .sc-time-indicators {
 	background-color: var(--btns-bg1);
 	color: var(--btns-txt1);
 }
+.sc-player-standart .sc-cover-slide:hover,
 .sc-player-standart .sc-info-toggle:hover {
 	background-color: var(--btns-bg2);
 	color: var(--btns-txt2);
@@ -124,6 +126,7 @@
 
 /* Shadow Boxes */
 .sc-player-standart .sc-time-indicators,
+.sc-player-standart .sc-cover-slide,
 .sc-player-standart .sc-info-toggle,
 .sc-player-standart .sc-play-toggle,
 .sc-player-standart .sc-time-scale,

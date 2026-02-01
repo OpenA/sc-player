@@ -144,6 +144,7 @@
 	background-color: rgba(0, 0, 0, .9);
 	overflow: auto;
 }
+.sc-player-modern .sc-cover-slide,
 .sc-player-modern .sc-info-toggle {
 	position: absolute;
 	top: 9px;
@@ -151,8 +152,9 @@
 	width: 17px;
 	height: 17px;
 	border-radius: 100%;
-	background-position: 0 100%;
+	background-position: left center;
 }
+.sc-player-modern .sc-cover-slide,
 .sc-player-modern .sc-bar-volume:before,
 .sc-player-modern .sc-info-toggle {
 	background-color: rgba(0,0,0,.5);
@@ -204,11 +206,14 @@
 	left:0; top:0;
 	padding: 8.5px;
 	border-radius: 10px;
-	background-position: 100% 0;
+	background-position: right top;
 	outline: 1px solid #ddd;
 }
 .sc-player-modern .sc-volume[data-percent="0"] > .sc-bar-volume:before {
-	background-position: 100% 100%;
+	background-position-y: center;
+}
+.sc-player-modern .sc-cover-slide {
+	background-position-y: bottom; left: 39px;
 }
 
 /*******************************/

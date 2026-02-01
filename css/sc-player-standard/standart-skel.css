@@ -89,6 +89,7 @@
 }
 
 /* Info Button */
+.sc-player-standart .sc-cover-slide,
 .sc-player-standart .sc-info-toggle {
 	position: absolute;
 	border-radius: 4px;
@@ -101,7 +102,11 @@
 	padding: 0 4px;
 }
 .sc-player-standart .S-detail > .sc-info-toggle:before {
-	content: '⨯';
+	content: '✕';
+	padding: 0 1px;
+}
+.sc-player-standart .sc-cover-slide:before {
+	content: '⇌';
 	padding: 0 1px;
 }
 
@@ -135,6 +140,9 @@
 .sc-player-standart.sc-P-wide .sc-info-toggle {
 	right: 10px;
 	left: auto;
+}
+.sc-player-standart:not(.sc-P-wide) .sc-cover-slide {
+	left: 35px;
 }
 .sc-player-standart.sc-P-wide:before,
 .sc-player-standart.sc-P-wide .sc-box-controls {

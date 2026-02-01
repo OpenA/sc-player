@@ -19,6 +19,7 @@ sc-player .sc-tracklist {
 	overflow: auto;
 }
 
+sc-player .sc-cover-slide,
 sc-player .sc-info-toggle,
 sc-player .sc-play-toggle,
 sc-player .sc-track {
@@ -27,11 +28,13 @@ sc-player .sc-track {
 
 sc-player .sc-volume,
 sc-player .sc-time-scale,
+sc-player .sc-cover-slide,
 sc-player .sc-time-indicators,
 sc-player .sc-info-overlay {
 	visibility: hidden;
 }
 
+sc-player *:hover   > .sc-artwork:not(:empty) ~ .sc-cover-slide,
 sc-player .S-played > .sc-volume,
 sc-player .S-played > .sc-time-scale,
 sc-player .S-played > .sc-time-indicators,
@@ -62,7 +65,10 @@ sc-player .sc-track {
 	white-space: nowrap;
 	overflow: hidden;
 }
-sc-player .sc-track:after {
+sc-player .sc-track[data-artist]:before {
+	content: "«" attr(data-artist) "» ";
+}
+sc-player .sc-track[data-duration]:after {
 	content: attr(data-duration);
 }
 sc-player .sc-time-indicators:before {
@@ -70,6 +76,19 @@ sc-player .sc-time-indicators:before {
 	white-space: nowrap;
 }
 
+sc-player .sc-artwork {
+	overflow: hidden;
+	position: relative;
+}
+sc-player .sc-artwork > img {
+	width: 100%;
+	height: auto;
+	display: block;
+	min-height: 100%;
+}
+sc-player .sc-artwork > img:last-child {
+	margin-bottom: 10px;
+}
 sc-player .sc-waveform,
 sc-player .sc-bar-plying,
 sc-player .sc-bar-volume {

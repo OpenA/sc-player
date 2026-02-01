@@ -36,13 +36,14 @@ class SCPlayer extends HTMLElement {
 		const sc_volbar = sc_ui.volmBar  = SCPlayer.cNode('sc-bar-volume');
 		const sc_bufbar = sc_ui.buffBar  = SCPlayer.cNode('sc-bar-buffer');
 		const sc_plybar = sc_ui.playBar  = SCPlayer.cNode('sc-bar-plying');
+		const sc_scover = /* .......... */ SCPlayer.cNode('sc-cover-slide');
 
 		sc_addinp.type = 'file';
 		sc_addinp.multiple = true;
 		sc_volbar.style.width = '100%';
 		sc_player.className = `sc-player-${theme} sc-P-${variant} sc-C-${colors}`;
 		sc_player.append(sc_tracks, sc_dropbx, sc_ctrlbx);
-		sc_ctrlbx.append(sc_artwrk, sc_volume, sc_tscale, sc_timein, sc_play, sc_inflay, sc_info);
+		sc_ctrlbx.append(sc_artwrk, sc_scover, sc_volume, sc_tscale, sc_timein, sc_play, sc_inflay, sc_info);
 		sc_dropbx.append(sc_addbtn);
 		sc_volume.append(sc_volbar);
 		sc_addbtn.append(sc_addinp);
@@ -63,6 +64,7 @@ class SCPlayer extends HTMLElement {
 		sc_ui.audio.autoplay = true;
 
 		this._scui = sc_ui;
+		this._snid = ++SCPlayer._instances_count;
 
 		Object.defineProperty(this, '_scui', {
 			enumerable: false, writable: false
@@ -85,26 +87,56 @@ class SCPlayer extends HTMLElement {
  * @param {[File]} files - if you use blob
  */
 	addTracksFromFiles(files) {
-		for(const file of files) {
-			const key = `${file.type};${file.size}`;
 
-			let ttl = file.name || '',
-				  j = ttl.lastIndexOf('.'),
-				ext = ttl.substring(j+1);
+		const { playlist, artwork } = this._scui;
 
-			if (SCPlayer.metadata_db.has(key) || !(/^(?:audio|video)\//.test(file.type) ||
-				SCPlayer.SUPPORTED_FORMATS.includes(ext)
-			)) continue;
+		for(const f of files) {
+			const mime = f.type.substring(f.type.indexOf('/') + 1);
+			const sid = `sc${this._snid}_${f.type}_${f.size}`;
 
-			const trk = SCPlayer.cNode('sc-track', 'sc-item');
-			const obj = { url: URL.createObjectURL(file) };
-			trk.title = ttl;
-			trk.dataset.duration = '--:--';
-			trk.dataset.dbkey = key;
-			trk.textContent = j === 0 ? '(empty name)' : ttl.substring(0,j).replace(/^\d\d\d?(?:\.|\:| \-)? /, '');
-			SCPlayer.metadata_db.set(key, obj);
-			this._scui.playlist.append( trk );
+			if (f.type.startsWith('image')) {
+				if (!(sid in artwork.children) && !mime.startsWith('x-')) {
+					artwork.append( SCPlayer.cItemCover(sid, f) )
+				}
+			} else if (
+				f.type.startsWith('audio') || f.type.startsWith('application') ||
+				f.type.startsWith('video') || f.type.startsWith('binary')
+			) {
+				const info = SCPlayer.parseTrackName(f.name, mime);
+				if (!(sid in playlist.children) && info.is_valid) {
+					playlist.append( SCPlayer.cItemTrack(sid, f, info) );
+				}
+			}
 		}
+	}
+
+	slideToNextCoverY(re_y = false) {
+		const { artwork } = this._scui;
+		const yMax = Math.round(artwork.scrollTopMax);
+		const sTop = Math.round(artwork.scrollTop);
+		let y, ry = -1, ny = yMax;
+		for (const img of artwork.children) {
+			y = img.offsetTop;
+			if (y > sTop && y < ny) ny = y; else
+			if (y < sTop && y > ry) ry = y;
+		}
+		artwork.scroll({ behavior: 'smooth',
+			top : re_y ? (ry === -1 ? y : ry) : (ny === yMax ? 0 : ny)
+		});
+	}
+	slideToNextCoverX(re_x = false) {
+		const { artwork } = this._scui;
+		const xMax  = Math.round(artwork.scrollLeftMax);
+		const sLeft = Math.round(artwork.scrollLeft);
+		let x, rx = -1, nx = xMax;
+		for (const img of artwork.children) {
+			x = img.offsetLeft;
+			if (x > sLeft && x < nx) nx = x; else
+			if (x < sLeft && x > rx) rx = x;
+		}
+		artwork.scroll({ behavior: 'smooth',
+			left: re_x ? (rx === -1 ? x : rx) : (nx === xMax ? 0 : nx),
+		});
 	}
 
 /**
@@ -115,7 +147,7 @@ class SCPlayer extends HTMLElement {
 		const ui = this._scui;
 		const {
 			url, artist, title, album, cover
-		} = SCPlayer.metadata_db.get(track.dataset.dbkey);
+		} = SCPlayer.metadata_db.get(track.id.substring(4 + (this._snid > 9)));
 
 		track.classList.add('S-active');
 
@@ -177,6 +209,9 @@ class SCPlayer extends HTMLElement {
 			 pcl = el.parentNode.classList;
 
 		switch (ccl[0]) {
+		case 'sc-cover-slide':
+			this.slideToNextCoverY();
+			break;
 		case 'sc-info-toggle':
 			if (pcl.toggle('S-detail'))
 				/**/;
@@ -264,6 +299,58 @@ class SCPlayer extends HTMLElement {
 		window.addEventListener('pointerup', onEnd);
 	}
 
+	static parseTrackName(name = '', mime = '') {
+		let [_, num = '',
+			 artist = '',
+			  title = (name || `${Date.now()}`),
+			    ext = (mime === 'mpeg' ? 'mp3' : mime === 'x-matroska'   ? 'mka' :
+				       mime === 'mp4'  ? 'm4a' : mime === 'octet-stream' ? 'bin' : mime)
+			] = name.match(
+				/^(?:(\d+)[. -]+)?(?:(.+)\s+[—-]+\s+)?(.+)\.([A-z0-9]+)$/
+			) || [];
+		// ===
+		ext = ext.toLowerCase();
+		return {
+			is_valid: this.SUPPORTED_FORMATS.includes(ext), num, artist, title, ext
+		};
+	}
+/** Create cover item
+ * @param {String} sid
+ * @param {Blob} file
+ */
+	static cItemCover(sid, file) {
+		const img = new Image;
+		const key = sid.substring(sid.indexOf('_') + 1);
+		let { url = '' } = this.metadata_db.get(key) || {};
+
+		if(!url) {
+			url = URL.createObjectURL(file);
+			this.metadata_db.set(key, { url });
+		}
+		img.id  = sid;
+		img.src = url;
+		return img;
+	}
+/** Create track item
+ * @param {String} sid
+ * @param {File} file
+ * @param {Object} info
+ */
+	static cItemTrack(sid, file, info) {
+		const trk = this.cNode('sc-track', 'sc-item');
+		const key = sid.substring(sid.indexOf('_') + 1);
+		trk.id    = sid;
+		trk.title = file.name;
+		trk.textContent = info.title;
+		trk.dataset.duration = '--:--';
+		if(info.artist)
+			trk.dataset.artist = info.artist;
+		if(!this.metadata_db.has(key)) {
+			info.url = URL.createObjectURL(file);
+			this.metadata_db.set(key, info);
+		}
+		return trk;
+	}
 	static cNode(cName = '', tag = 'div') {
 		const el = document.createElement(tag);
 		el.className = cName;
@@ -276,11 +363,13 @@ class SCPlayer extends HTMLElement {
 
 		return `${h ? h +':' : ''}${dm}:${ds}`;
 	}
-}
 
-Object.defineProperty(SCPlayer, 'SUPPORTED_FORMATS', {
-	enumerable: true,
-	writable: false,
-	value: ['ogg','flac','opus','mp3','aac','m4a','m4r','m4v','mp4','webm','ogv']
-});
+	static _instances_count = 0;
+	static SUPPORTED_FORMATS = [
+		// AUDIO FORMATS
+		'ogg','mka','mp3','m4a','flac','opus','aac',
+		// VIDEO FORMATS
+		'ogv','mkv','mp4','m4v','webm'
+	];
+}
 customElements.define('sc-player', SCPlayer);
