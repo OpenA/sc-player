@@ -147,19 +147,31 @@
 .sc-player-modern .sc-cover-slide,
 .sc-player-modern .sc-info-toggle {
 	position: absolute;
-	top: 9px;
-	left: 9px;
-	width: 17px;
-	height: 17px;
+	top: 9px; left: 9px;
 	border-radius: 100%;
 	background-position: left center;
 }
+.sc-player-modern .sc-play-nav {
+	position: absolute;
+	right: 5px; bottom: 15px;
+}
+.sc-player-modern .sc-play-prev,
+.sc-player-modern .sc-play-next {
+	background-position: right bottom;
+	border-radius: 0 4px 4px 0;
+}
+.sc-player-modern .sc-play-prev {
+	rotate: 180deg;
+}
+.sc-player-modern .sc-play-prev,
+.sc-player-modern .sc-play-next,
 .sc-player-modern .sc-cover-slide,
 .sc-player-modern .sc-bar-volume:before,
 .sc-player-modern .sc-info-toggle {
 	background-color: rgba(0,0,0,.5);
 	background-image: url('img/info-modern.svg');
 	background-size: 200%;
+	width: 17px; height: 17px;
 }
 .sc-player-modern .sc-info-toggle:hover {
 	background-color: rgba(85,85,85,.5);
@@ -167,11 +179,19 @@
 .sc-player-modern .sc-info-title {
 	color: #95bcce;
 }
-.sc-player-modern .sc-info-album {
-	color: #5e7681;
+.sc-player-modern .sc-info-artist {
+	color: #c2d5e1;
+	font-style: italic;
 }
-.sc-player-modern .sc-info-author {
-	color: #5e7681;
+.sc-player-modern .S-played .sc-info-artist:before,
+.sc-player-modern .S-paused .sc-info-artist:before {
+	content: 'by ';
+	font-variant: super;
+	font-weight: normal;
+}
+.sc-player-modern .S-paused .sc-info-artist:empty:after,
+.sc-player-modern .S-played .sc-info-artist:empty:after {
+	content: '- - - -';
 }
 .sc-player-modern:not(:hover):not(:focus) .sc-info-toggle {
 	visibility: hidden;
@@ -204,7 +224,7 @@
 	content:'';
 	position: absolute;
 	left:0; top:0;
-	padding: 8.5px;
+	display: block;
 	border-radius: 10px;
 	background-position: right top;
 	outline: 1px solid #ddd;

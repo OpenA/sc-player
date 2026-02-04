@@ -22,11 +22,19 @@ sc-player .sc-tracklist {
 sc-player .sc-cover-slide,
 sc-player .sc-info-toggle,
 sc-player .sc-play-toggle,
+sc-player .sc-play-prev,
+sc-player .sc-play-next,
+sc-player .sc-play-mode,
 sc-player .sc-track {
+	user-select: none;
 	cursor: pointer;
 }
 
 sc-player .sc-volume,
+sc-player .sc-play-nav,
+sc-player .sc-play-prev,
+sc-player .sc-play-next,
+sc-player .sc-play-mode,
 sc-player .sc-time-scale,
 sc-player .sc-cover-slide,
 sc-player .sc-time-indicators,
@@ -35,6 +43,10 @@ sc-player .sc-info-overlay {
 }
 
 sc-player *:hover   > .sc-artwork:not(:empty) ~ .sc-cover-slide,
+sc-player .H-prev   ~ .S-played > .sc-play-nav > .sc-play-prev,
+sc-player .H-next   ~ .S-played > .sc-play-nav > .sc-play-next,
+sc-player .S-played > .sc-play-mode,
+sc-player .S-played > .sc-play-nav,
 sc-player .S-played > .sc-volume,
 sc-player .S-played > .sc-time-scale,
 sc-player .S-played > .sc-time-indicators,
@@ -47,6 +59,27 @@ sc-player .sc-info-overlay {
 	position: absolute;
 	left: 0; right: 0;
 	top: 0; bottom: 0;
+}
+sc-player .sc-info-overlay {
+	overflow-x: hidden;
+	overflow-y: scroll;
+}
+sc-player .sc-info-artist,
+sc-player .sc-info-title {
+	text-align: center;
+	font-weight: bold;
+	margin: 8px;
+}
+sc-player .sc-info-lirika {
+	unicode-bidi: embed;
+	white-space: break-spaces;
+	word-wrap: break-word;
+	padding: 0 4px;
+	margin: 4px;
+}
+
+sc-player .sc-play-nav {
+	display: flex;
 }
 
 sc-player .sc-bar-buffer { bottom:0; }

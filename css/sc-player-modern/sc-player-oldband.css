@@ -140,15 +140,69 @@
 	background-position-x: left;
 }
 
+/* Playlist navigation panel */
+.sc-player-oldband .sc-play-nav {
+	position: absolute;
+	top: 53px; right: 10px;
+}
+.sc-player-oldband .sc-play-prev,
+.sc-player-oldband .sc-play-next {
+	position: relative;
+	padding: 6px 10px;
+	background: url('img/forvard-button.svg') no-repeat center / 100%;
+}
+.sc-player-oldband .sc-play-prev {
+	rotate: 180deg;
+	margin-right: 5px;
+}
+.sc-player-oldband .sc-play-mode {
+	position: absolute;
+	bottom: var(--vol-vpad);
+	left: 215px;
+}
+.sc-player-oldband .sc-play-mode:before {
+	content: '《 ' attr(data-mode) ' 》';
+}
+
+/* Media Info */
 .sc-player-oldband .sc-cover-slide {
-	user-select: none;
 	background: rgba(0,0,0,.4) url('img/down-angle.svg') no-repeat center / 20%;
 	position: absolute;
 	top: 92px; height: 13px;
 	left: 5px; width: 100px;
 	cursor: pointer;
 }
-.sc-player-oldband .sc-volume.S-hook:after {
-	content: '' attr(data-percent) '%';
-	padding-right: 2px;
+.sc-player-oldband .sc-info-overlay {
+	left: 105px; top: 0;
+	right: 55px; bottom: 45px;
+	visibility: visible;
+}
+.sc-player-oldband .sc-info-artist,
+.sc-player-oldband .sc-info-title {
+	text-align: left;
+	margin-right: 2px;
+}
+.sc-player-oldband .sc-info-title:not(:empty) {
+	text-decoration: underline;
+}
+.sc-player-oldband .sc-info-artist:not(:empty) {
+	font-size: 90%;
+	font-variant: petite-caps;
+	color: var(--bar-fill);
+}
+.sc-player-oldband .sc-info-lirika:not(:empty) {
+	background-color: var(--art-fill);
+	border-radius: 3px;
+	margin-top: 20px;
+}
+.sc-player-oldband .sc-info-artist:before {
+	content: 'by ';
+	font-variant: normal;
+	font-weight: normal;
+}
+.sc-player-oldband .sc-info-title:empty:before {
+	content: '。。。';
+}
+.sc-player-oldband .sc-info-artist:empty:before {
+	content: '- - -';
 }

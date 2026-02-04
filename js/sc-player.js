@@ -12,6 +12,8 @@
 class SCPlayer extends HTMLElement {
 
 	constructor({
+		with_local_files = true,
+		with_extra_controls = true,
 		single_audio_instance = false,
 		has_touch = ('ontouchstart' in window),
 		theme = 'standart',
@@ -21,8 +23,9 @@ class SCPlayer extends HTMLElement {
 		const sc_player = super();
 		const sc_ui     = {};
 		const sc_tracks = sc_ui.playlist = SCPlayer.cNode('sc-tracklist', 'sc-list');
-		const sc_addinp = /* .......... */ SCPlayer.cNode('S-hidden', 'input');
-		const sc_addbtn = /* .......... */ SCPlayer.cNode('sc-add-track', 'label');
+		const sc_title  = sc_ui.trTitle  = SCPlayer.cNode('sc-info-title');
+		const sc_artist = sc_ui.trArtist = SCPlayer.cNode('sc-info-artist');
+		const sc_lirika = sc_ui.trLirika = SCPlayer.cNode('sc-info-lirika');
 		const sc_dropbx = sc_ui.dropBox  = SCPlayer.cNode('sc-box-drop');
 		const sc_ctrlbx = sc_ui.ctrlBox  = SCPlayer.cNode('sc-box-controls');
 		const sc_wavefm = sc_ui.waveform = SCPlayer.cNode('sc-waveform');
@@ -30,29 +33,43 @@ class SCPlayer extends HTMLElement {
 		const sc_volume = sc_ui.volume   = SCPlayer.cNode('sc-volume');
 		const sc_tscale = sc_ui.timescal = SCPlayer.cNode('sc-time-scale');
 		const sc_timein = sc_ui.timekind = SCPlayer.cNode('sc-time-indicators');
-		const sc_inflay = sc_ui.infoLyer = SCPlayer.cNode('sc-info-overlay');
+		const sc_inflay = /* .......... */ SCPlayer.cNode('sc-info-overlay');
 		const sc_info   = /* .......... */ SCPlayer.cNode('sc-info-toggle');
 		const sc_play   = /* .......... */ SCPlayer.cNode('sc-play-toggle');
-		const sc_volbar = sc_ui.volmBar  = SCPlayer.cNode('sc-bar-volume');
+		const sc_volbar = sc_ui.volBar   = SCPlayer.cNode('sc-bar-volume');
 		const sc_bufbar = sc_ui.buffBar  = SCPlayer.cNode('sc-bar-buffer');
 		const sc_plybar = sc_ui.playBar  = SCPlayer.cNode('sc-bar-plying');
 		const sc_scover = /* .......... */ SCPlayer.cNode('sc-cover-slide');
 
-		sc_addinp.type = 'file';
-		sc_addinp.multiple = true;
 		sc_volbar.style.width = '100%';
 		sc_player.className = `sc-player-${theme} sc-P-${variant} sc-C-${colors}`;
 		sc_player.append(sc_tracks, sc_dropbx, sc_ctrlbx);
 		sc_ctrlbx.append(sc_artwrk, sc_scover, sc_volume, sc_tscale, sc_timein, sc_play, sc_inflay, sc_info);
-		sc_dropbx.append(sc_addbtn);
+		sc_inflay.append(sc_title , sc_artist, sc_lirika);
 		sc_volume.append(sc_volbar);
-		sc_addbtn.append(sc_addinp);
 		sc_tscale.appendChild(sc_wavefm).append(sc_bufbar, sc_plybar);
 
-		sc_player.addEventListener('dragover' , e => this._onDragNDropHandler(e));
-		sc_player.addEventListener('dragleave', e => this._onDragNDropHandler(e));
-		sc_player.addEventListener('drop'     , e => this._onDragNDropHandler(e));
-		sc_addinp.addEventListener('change'   , e => this.addTracksFromFiles(e.target.files));
+		if (with_extra_controls) {
+			const sc_plynav = SCPlayer.cNode('sc-play-nav');
+			const sc_next   = SCPlayer.cNode('sc-play-next');
+			const sc_plmode = SCPlayer.cNode('sc-play-mode');
+			const sc_prev   = SCPlayer.cNode('sc-play-prev');
+			sc_plmode.dataset.mode = 'SL';
+			sc_plmode.title = ' SL • single list play\n RL • repeated playlist\n RT • repeated track';
+			sc_plynav.append(sc_prev, sc_next);
+			sc_play.before(sc_plmode, sc_plynav);
+		}
+		if (with_local_files) {
+			const sc_tradd = SCPlayer.cNode('sc-add-track', 'label');
+			const sc_files = sc_tradd.appendChild(document.createElement('input'));
+			sc_files.type = 'file';
+			sc_files.multiple = sc_files.hidden = true;
+			sc_player.addEventListener('dragover' , e => this._onDragNDropHandler(e));
+			sc_player.addEventListener('dragleave', e => this._onDragNDropHandler(e));
+			sc_player.addEventListener('drop'     , e => this._onDragNDropHandler(e));
+			sc_files .addEventListener('change'   , e => this.addTracksFromFiles(e.target.files));
+			sc_dropbx.append(sc_tradd);
+		}
 		sc_player.addEventListener('click'    , e => this._onClickHandler(e));
 		sc_volume.addEventListener('pointerdown', e => { if (!e.button) this._onBarChange(e, false) });
 		sc_tscale.addEventListener('pointerdown', e => { if (!e.button) this._onBarChange(e, true) });
@@ -64,10 +81,12 @@ class SCPlayer extends HTMLElement {
 		sc_ui.audio.autoplay = true;
 
 		this._scui = sc_ui;
-		this._snid = ++SCPlayer._instances_count;
+		this._guid = ++SCPlayer._instances_count;
+		this.play_mode = 0;
 
-		Object.defineProperty(this, '_scui', {
-			enumerable: false, writable: false
+		Object.defineProperties(this, {
+			'_scui': { enumerable: false, writable: false },
+			'_guid': { enumerable: false, writable: false }
 		});
 	}
 
@@ -92,7 +111,7 @@ class SCPlayer extends HTMLElement {
 
 		for(const f of files) {
 			const mime = f.type.substring(f.type.indexOf('/') + 1);
-			const sid = `sc${this._snid}_${f.type}_${f.size}`;
+			const sid = `sc${this._guid}_${f.type}_${f.size}`;
 
 			if (f.type.startsWith('image')) {
 				if (!(sid in artwork.children) && !mime.startsWith('x-')) {
@@ -105,6 +124,7 @@ class SCPlayer extends HTMLElement {
 				const info = SCPlayer.parseTrackName(f.name, mime);
 				if (!(sid in playlist.children) && info.is_valid) {
 					playlist.append( SCPlayer.cItemTrack(sid, f, info) );
+					playlist.classList.add('H-next');
 				}
 			}
 		}
@@ -142,19 +162,45 @@ class SCPlayer extends HTMLElement {
 /**
  * @param {HTMLElement} track
  */
-	selectTrack(track = this._scui.playlist.children[0]) {
-		const au = this._scui.audio;
-		const ui = this._scui;
-		const {
-			url, artist, title, album, cover
-		} = SCPlayer.metadata_db.get(track.id.substring(4 + (this._snid > 9)));
+	selectTrack(track) {
+		const { currTrack, playlist: { classList: navcl } } = this._scui;
 
-		track.classList.add('S-active');
+		if (currTrack)
+			currTrack.classList.remove('S-active');
+		navcl.remove('H-prev', 'H-next');
+
+		let key = '';
+		if((this._scui.currTrack = track)) {
+			key = track.id.substring(4 + (this._guid > 9));
+			/***/ track.classList.add('S-active');
+			//
+			if (track.previousElementSibling) navcl.add('H-prev');
+			if (track.nextElementSibling    ) navcl.add('H-next');
+		}
+		this.playMediaSource(key);
+	}
+
+/**
+ * @param {String} dbKey
+ */
+	playMediaSource(dbKey) {
+		const { audio:au, trTitle, trArtist, trLirika, artwork } = this._scui;
+		const {
+			url = '', artist = '', title = '', album = '', cover = '', comment = ''
+		} = SCPlayer.metadata_db.get(dbKey) || {};
+
+		// upd info
+		trArtist.textContent = artist;
+		trTitle .textContent = title;
+		trLirika.textContent = comment;
+		trLirika.dataset.album = album;
+		// 
+		let cover_art = artwork.children[cover];
+		if (cover_art)  artwork.scroll({ smooth: 'behavior', top: cover_art.offsetTop });
 
 		au.onpause = au.onloadedmetadata =
 		au.onended = au.ontimeupdate =
-		au.onplay = e => this._onMediaHandler(e);
-		ui.currTrack = track;
+		au.onplay = url ? e => this._onMediaHandler(e) : null;
 		au.src = url;
 	}
 
@@ -181,10 +227,10 @@ class SCPlayer extends HTMLElement {
 		case 'pause': ctrlBox.classList.add   (`S-${type.substring(0,4)}ed`); break;
 		case 'ended': ctrlBox.classList.remove('S-paused', 'S-played');
 			//
-			/* ~~~ */ currTrack.classList.remove('S-active');
-			let nxt = currTrack.nextElementSibling;
-			if (nxt)
-				this.selectTrack(nxt);
+			let nxt = currTrack.nextElementSibling || (
+				this.play_mode === 1 ? currTrack.parentNode.firstElementChild : null
+			);
+			this.selectTrack(nxt);
 			break;
 		}
 	}
@@ -193,20 +239,24 @@ class SCPlayer extends HTMLElement {
  */
 	_onDragNDropHandler(e) {
 		e.preventDefault();
+		const { dropBox } = this._scui;
 		switch (e.type) {
 		case 'drop':
 			this.addTracksFromFiles(e.dataTransfer.files);
-		case 'dragleave': this.classList.remove('S-ondrop'); break;
-		case 'dragover' : this.classList.add   ('S-ondrop'); break;
+		case 'dragleave': dropBox.classList.remove('S-active'); break;
+		case 'dragover' : dropBox.classList.add   ('S-active');
 		}
 	}
 /**
  * @param {MouseEvent} e
  */
-	_onClickHandler(e) {
-		const el = e.target,
+	_onClickHandler({ target: el }) {
+
+		const { audio, playlist, currTrack } = this._scui;
+
+		const pp = el.parentNode,
 			 ccl = el.classList,
-			 pcl = el.parentNode.classList;
+			 pcl = pp.classList;
 
 		switch (ccl[0]) {
 		case 'sc-cover-slide':
@@ -217,19 +267,29 @@ class SCPlayer extends HTMLElement {
 				/**/;
 			break;
 		case 'sc-play-toggle':
-			/**/ if (pcl.contains('S-paused')) this._scui.audio.play();
-			else if (pcl.contains('S-played')) this._scui.audio.pause();
-			else
-				this.selectTrack();
+			/**/ if (pcl.contains('S-paused')) audio.play();
+			else if (pcl.contains('S-played')) audio.pause();
+			else if ((el = playlist.children[0]))
+				this.selectTrack(el);
 			break;
 		case 'sc-track':
-			// select track
-			if (!ccl.contains('S-active')) {
-				if (this._scui.currTrack)
-					this._scui.currTrack.classList.remove('S-active');
-				this._scui.audio.pause();
+			if (!ccl.contains('S-active'))
 				this.selectTrack(el);
-			}
+			break;
+		case 'sc-play-next':
+			if ((el = currTrack.nextElementSibling))
+				this.selectTrack(el);
+			break;
+		case 'sc-play-prev':
+			if ((el = currTrack.previousElementSibling))
+				this.selectTrack(el);
+			break;
+		case 'sc-play-mode':
+			var m = ++this.play_mode;
+			if (m > 2)
+				m = this.play_mode = 0;
+			el.dataset.mode = ['SL','RL','RT'][m];
+			audio.loop = (m === 2);
 			break;
 		case 'sc-download':
 			SCPlayer.download(el.href);
@@ -243,7 +303,7 @@ class SCPlayer extends HTMLElement {
  */
 	_onBarChange(e, is_play_bar = false) {
 
-		const bar    = is_play_bar ? this._scui.playBar  : this._scui.volmBar;
+		const bar    = is_play_bar ? this._scui.playBar  : this._scui.volBar;
 		const audio  = /* ------- */ this._scui.audio;
 		const parent = is_play_bar ? this._scui.timekind : this._scui.volume;
 
@@ -275,7 +335,7 @@ class SCPlayer extends HTMLElement {
 		const onMove = e => {
 			const v = is_vert ? vPos(e.clientY) : hPos(e.clientX);
 			if (is_play_bar) {
-				parent.dataset.pos = SCPlayer.timeCalc(v * 100);
+				parent.dataset.pos = SCPlayer.timeCalc(audio.duration * v);
 			} else {
 				parent.dataset.percent = (v * 100).toFixed();
 				audio.volume = v;
