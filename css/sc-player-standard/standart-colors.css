@@ -16,7 +16,7 @@
 
 	--plist-bg1: #e6e6e6 linear-gradient(#e6e6e6, #fefefe);
 	--awrk-col1: #e1e1e1; --awrk-bg1: #cecece;
-	--awrk-col2: #7e7e7e;
+	--awrk-col2: #7e7e7e; --awrk-bg2: #c5bd9a;
 }
 .sc-C-green {
 	--play-col1: #239a64; --btns-bg1: #22b573;
@@ -34,7 +34,7 @@
 
 	--plist-bg1: #4f554d;
 	--awrk-col1: #e2e8e0; --awrk-bg1: #a2a7a1;
-	--awrk-col2: #484c48;
+	--awrk-col2: #484c48; --awrk-bg2: #a7cfbd;/*#7fb8ad*/
 }
 .sc-C-blue {
 	--play-col1: #2c66db; --btns-bg1: white;
@@ -52,7 +52,7 @@
 
 	--plist-bg1: white;
 	--awrk-col1: #f0fcfc; --awrk-bg1: #dce4e7;
-	--awrk-col2: #c4c7cc;
+	--awrk-col2: #c4c7cc; --awrk-bg2: #b3becf;
 }
 
 .sc-player-standart {
@@ -61,8 +61,10 @@
 
 /* Artwork + Tracklist */
 .sc-player-standart .sc-artwork {
-	background-color: var(--awrk-bg1);
-	background-image: linear-gradient(45deg, var(--awrk-col1), var(--awrk-col2));
+	background: var(--awrk-bg1) no-repeat center / 100%;
+	background-image: url('img/artwork-standart.svg'),
+		radial-gradient(circle at 50%, var(--awrk-bg2) 70%, transparent 70%),
+		linear-gradient(45deg, var(--awrk-col1), var(--awrk-col2));
 }
 .sc-player-standart.sc-P-wide .sc-box-controls {
 	background-color: var(--awrk-bg1);
@@ -86,7 +88,7 @@
 	color: var(--fill-bar1);
 }
 .sc-player-standart .sc-volume.S-hook:after{
-	background-image: linear-gradient(transparent 8%, var(--cont-bg1) 16%, var(--cont-bg1) 82%, transparent 90%);
+	background-image: linear-gradient(transparent 8%, var(--cont-bg1) 18%, var(--cont-bg1) 84%, transparent 94%);
 }
 .sc-player-standart .sc-bar-buffer {
 	background-color: var(--fill-bar2);
@@ -107,12 +109,15 @@
 }
 
 /* Info button + Timer digits */
+.sc-player-standart .sc-play-nav > *,
+.sc-player-standart .sc-play-mode,
 .sc-player-standart .sc-cover-slide,
 .sc-player-standart .sc-info-toggle,
 .sc-player-standart .sc-time-indicators {
 	background-color: var(--btns-bg1);
 	color: var(--btns-txt1);
 }
+.sc-player-standart .sc-play-nav > :hover,
 .sc-player-standart .sc-cover-slide:hover,
 .sc-player-standart .sc-info-toggle:hover {
 	background-color: var(--btns-bg2);
@@ -129,6 +134,9 @@
 .sc-player-standart .sc-cover-slide,
 .sc-player-standart .sc-info-toggle,
 .sc-player-standart .sc-play-toggle,
+.sc-player-standart .sc-play-mode,
+.sc-player-standart .sc-play-prev,
+.sc-player-standart .sc-play-next,
 .sc-player-standart .sc-time-scale,
 .sc-player-standart .sc-tracklist,
 .sc-player-standart .sc-artwork,

@@ -129,15 +129,23 @@
 .sc-player-oldband .sc-volume:before {
 	content: '';
 	position: absolute;
-	top: 0; left: 100%;
+	top: 0;
 	padding: 8.5px;
 	cursor: pointer;
 	filter: var(--re-color);
-	background: url('img/info-modern.svg') no-repeat top right / 200%;
+	background-image: url('img/info-modern.svg');
+	background-size: 200%;
+}
+.sc-player-oldband .sc-volume:before {
+	background-position: top left;
+	left: -9px;
 }
 .sc-player-oldband .sc-volume:after {
-	left: -9px;
-	background-position-x: left;
+	background-position: top right;
+	right: -16px;
+}
+.sc-player-oldband .sc-volume[data-percent="0"]:after {
+	background-position: center right;
 }
 
 /* Playlist navigation panel */

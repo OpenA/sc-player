@@ -22,7 +22,7 @@
 /*********** Artwork ***********/
 /*******************************/
 .sc-player-modern .sc-artwork {
-	background: url('img/artwork-qm.svg') no-repeat center / 100%;
+	background: url('img/melody-icon.svg') no-repeat 60% / 55%, linear-gradient(white, #ccc);
 	box-shadow: rgba(0, 0, 0, .35) 0 1px 5px;
 }
 .sc-player-modern .sc-artwork:after {
@@ -126,9 +126,6 @@
 .sc-player-modern.sc-P-horizontal .sc-tracklist {
 	transition: left .5s ease-in-out;
 	left: 100%;
-}
-.sc-player-modern:not(:hover):not(:focus) .sc-tracklist {
-	top: 0; left: 0;
 }
 
 /*******************************/
@@ -241,5 +238,6 @@
 .sc-player-modern .sc-bar-volume {
 	transition: top .5s ease, max-height .5s ease-in-out;
 }
-.sc-player-modern:not(:hover):not(:focus) .sc-bar-volume { max-height: 0; }
-.sc-player-modern:not(:hover):not(:focus) .sc-volume     { max-height: 17px; top: 9px; }
+.sc-player-modern:not(:hover):not(:focus) .sc-bar-volume { transition-delay: .7s; max-height: 0;  }
+.sc-player-modern:not(:hover):not(:focus) .sc-volume     { transition-delay: .7s; max-height: 17px; top: 9px;  }
+.sc-player-modern:not(:hover):not(:focus) .sc-tracklist  { transition-delay: .7s; top: 0; left: 0; }

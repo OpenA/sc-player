@@ -42,7 +42,7 @@ sc-player .sc-info-overlay {
 	visibility: hidden;
 }
 
-sc-player *:hover   > .sc-artwork:not(:empty) ~ .sc-cover-slide,
+sc-player *:hover   > .sc-artwork.H-gall ~ .sc-cover-slide,
 sc-player .H-prev   ~ .S-played > .sc-play-nav > .sc-play-prev,
 sc-player .H-next   ~ .S-played > .sc-play-nav > .sc-play-next,
 sc-player .S-played > .sc-play-mode,

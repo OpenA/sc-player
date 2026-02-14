@@ -44,7 +44,7 @@ class SCPlayer extends HTMLElement {
 		sc_volbar.style.width = '100%';
 		sc_player.className = `sc-player-${theme} sc-P-${variant} sc-C-${colors}`;
 		sc_player.append(sc_tracks, sc_dropbx, sc_ctrlbx);
-		sc_ctrlbx.append(sc_artwrk, sc_scover, sc_volume, sc_tscale, sc_timein, sc_play, sc_inflay, sc_info);
+		sc_ctrlbx.append(sc_artwrk, sc_scover, sc_tscale, sc_timein, sc_volume, sc_play, sc_inflay, sc_info);
 		sc_inflay.append(sc_title , sc_artist, sc_lirika);
 		sc_volume.append(sc_volbar);
 		sc_tscale.appendChild(sc_wavefm).append(sc_bufbar, sc_plybar);
@@ -54,10 +54,11 @@ class SCPlayer extends HTMLElement {
 			const sc_next   = SCPlayer.cNode('sc-play-next');
 			const sc_plmode = SCPlayer.cNode('sc-play-mode');
 			const sc_prev   = SCPlayer.cNode('sc-play-prev');
-			sc_plmode.dataset.mode = 'SL';
-			sc_plmode.title = ' SL • single list play\n RL • repeated playlist\n RT • repeated track';
+			const mode      = SCPlayer.PLAY_MODE_SET[0];
+			sc_plmode.dataset.mode = mode.name;
+			sc_plmode.title = mode.title;
 			sc_plynav.append(sc_prev, sc_next);
-			sc_play.before(sc_plmode, sc_plynav);
+			sc_volume.before(sc_plmode, sc_plynav);
 		}
 		if (with_local_files) {
 			const sc_tradd = SCPlayer.cNode('sc-add-track', 'label');
@@ -82,7 +83,7 @@ class SCPlayer extends HTMLElement {
 
 		this._scui = sc_ui;
 		this._guid = ++SCPlayer._instances_count;
-		this.play_mode = 0;
+		this._cycl = false;
 
 		Object.defineProperties(this, {
 			'_scui': { enumerable: false, writable: false },
@@ -102,6 +103,11 @@ class SCPlayer extends HTMLElement {
 		return db;
 	}
 
+	get play_mode( ) { return this._cycl | (this._scui.audio.loop << 1); }
+	set play_mode(m) {
+		this._cycl /*~~~~~~*/ = (m & 0x3) === 1;
+		this._scui.audio.loop = (m & 0x3) === 2;
+	}
 /**
  * @param {[File]} files - if you use blob
  */
@@ -115,7 +121,9 @@ class SCPlayer extends HTMLElement {
 
 			if (f.type.startsWith('image')) {
 				if (!(sid in artwork.children) && !mime.startsWith('x-')) {
-					artwork.append( SCPlayer.cItemCover(sid, f) )
+					artwork.append( SCPlayer.cItemCover(sid, f) );
+					if (artwork.children.length > 1)
+						artwork.classList.add('H-gall');
 				}
 			} else if (
 				f.type.startsWith('audio') || f.type.startsWith('application') ||
@@ -228,7 +236,7 @@ class SCPlayer extends HTMLElement {
 		case 'ended': ctrlBox.classList.remove('S-paused', 'S-played');
 			//
 			let nxt = currTrack.nextElementSibling || (
-				this.play_mode === 1 ? currTrack.parentNode.firstElementChild : null
+				this._cycl ? currTrack.parentNode.firstElementChild : null
 			);
 			this.selectTrack(nxt);
 			break;
@@ -285,11 +293,14 @@ class SCPlayer extends HTMLElement {
 				this.selectTrack(el);
 			break;
 		case 'sc-play-mode':
-			var m = ++this.play_mode;
-			if (m > 2)
-				m = this.play_mode = 0;
-			el.dataset.mode = ['SL','RL','RT'][m];
-			audio.loop = (m === 2);
+			{
+				let i = this._cycl - (audio.loop - 1);
+				let c = this._cycl = (i === 1);
+				let l = audio.loop = (i === 2);
+				let m = SCPlayer.PLAY_MODE_SET[i];
+				el.title        = m.title;
+				el.dataset.mode = m.name;
+			}
 			break;
 		case 'sc-download':
 			SCPlayer.download(el.href);
@@ -430,6 +441,11 @@ class SCPlayer extends HTMLElement {
 		'ogg','mka','mp3','m4a','flac','opus','aac',
 		// VIDEO FORMATS
 		'ogv','mkv','mp4','m4v','webm'
+	];
+	static PLAY_MODE_SET = [
+		{ name: 'PT', title: 'plays tracklist once'},
+		{ name: 'CP', title: 'plays tracklist cycled'},
+		{ name: 'LT', title: 'loops the played track'}
 	];
 }
 customElements.define('sc-player', SCPlayer);
