@@ -1,9 +1,9 @@
 /**
-* ***Stylized Common Player***
+* ***Stylish Сustom Player***
 *
 * Customizable HTML Audio Player with various forms and styles.
 *
-* - **Original source code** — https://github.com/OpenA/stylized-common-player
+* - **Original source code** — https://github.com/OpenA/sc-player
 * - **License** — GNU GPLv3
 * - **Author** — OpenA @ (2025)
 *
@@ -343,8 +343,8 @@ class SCPlayer extends HTMLElement {
 			bar.style.height = `${y.toFixed()}px`;
 			return v;
 		}
-		const onMove = e => {
-			const v = is_vert ? vPos(e.clientY) : hPos(e.clientX);
+		const onMove = ({ clientX:x, clientY:y }) => {
+			const v = is_vert ? vPos(y) : hPos(x);
 			if (is_play_bar) {
 				parent.dataset.pos = SCPlayer.timeCalc(audio.duration * v);
 			} else {
@@ -352,14 +352,14 @@ class SCPlayer extends HTMLElement {
 				audio.volume = v;
 			}
 		}
-		const onEnd = e => {
+		const onEnd = ({ type:t, clientX:x, clientY:y }) => {
 			window.removeEventListener('pointercancel', onEnd);
 			window.removeEventListener('pointermove', onMove);
 			window.removeEventListener('pointerup', onEnd);
 			parent.classList.remove('S-hook');
 
-			if (e.type.endsWith('up') && is_play_bar) {
-				const v = is_vert ? vPos(e.clientY) : hPos(e.clientX);
+			if (t.endsWith('up') && is_play_bar) {
+				const v = is_vert ? vPos(y) : hPos(x);
 				audio.currentTime = audio.duration * v;
 			}
 		}

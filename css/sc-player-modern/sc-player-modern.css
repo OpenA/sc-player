@@ -170,6 +170,16 @@
 	background-size: 200%;
 	width: 17px; height: 17px;
 }
+.sc-player-modern .sc-play-mode:before { content: attr(data-mode); }
+.sc-player-modern .sc-play-mode {
+	position: absolute;
+	top: 34px; right: 5px;
+	border-radius: 4px;
+	background-color: rgba(0,0,0,.5);
+	text-align: center;
+	min-width: 18px;
+}
+.sc-player-modern .sc-play-mode:hover,
 .sc-player-modern .sc-info-toggle:hover {
 	background-color: rgba(85,85,85,.5);
 }
