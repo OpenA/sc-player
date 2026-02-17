@@ -40,9 +40,13 @@ class SCPlayer extends HTMLElement {
 		const sc_bufbar = sc_ui.buffBar  = SCPlayer.cNode('sc-bar-buffer');
 		const sc_plybar = sc_ui.playBar  = SCPlayer.cNode('sc-bar-plying');
 		const sc_scover = /* .......... */ SCPlayer.cNode('sc-cover-slide');
+		const sc_shufl  = /* .......... */ SCPlayer.cNode('sc-shfl-tracks');
+		const sc_trmove = /* .......... */ SCPlayer.cNode('sc-move-tracks');
 
 		sc_volbar.style.width = '100%';
 		sc_player.className = `sc-player-${theme} sc-P-${variant} sc-C-${colors}`;
+		sc_ui.trkPlace = document.createTextNode('🢖 · · · · · · · · · · 🢔');
+		sc_dropbx.append(sc_shufl , sc_trmove);
 		sc_player.append(sc_tracks, sc_dropbx, sc_ctrlbx);
 		sc_ctrlbx.append(sc_artwrk, sc_scover, sc_tscale, sc_timein, sc_volume, sc_play, sc_inflay, sc_info);
 		sc_inflay.append(sc_title , sc_artist, sc_lirika);
@@ -61,7 +65,7 @@ class SCPlayer extends HTMLElement {
 			sc_volume.before(sc_plmode, sc_plynav);
 		}
 		if (with_local_files) {
-			const sc_tradd = SCPlayer.cNode('sc-add-track', 'label');
+			const sc_tradd = SCPlayer.cNode('sc-add-files', 'label');
 			const sc_files = sc_tradd.appendChild(document.createElement('input'));
 			sc_files.type = 'file';
 			sc_files.multiple = sc_files.hidden = true;
@@ -174,13 +178,13 @@ class SCPlayer extends HTMLElement {
 		const { currTrack, playlist: { classList: navcl } } = this._scui;
 
 		if (currTrack)
-			currTrack.classList.remove('S-active');
+			currTrack.classList.remove('S-current');
 		navcl.remove('H-prev', 'H-next');
 
 		let key = '';
 		if((this._scui.currTrack = track)) {
 			key = track.id.substring(4 + (this._guid > 9));
-			/***/ track.classList.add('S-active');
+			/***/ track.classList.add('S-current');
 			//
 			if (track.previousElementSibling) navcl.add('H-prev');
 			if (track.nextElementSibling    ) navcl.add('H-next');
@@ -226,7 +230,7 @@ class SCPlayer extends HTMLElement {
 			break;
 		case 'timeupdate':
 			// no effeck
-			if(!timekind.classList.contains('S-hook')) {
+			if(!timekind.classList.contains('S-hold')) {
 				timekind.dataset.pos = SCPlayer.timeCalc(ms);
 				playBar.style.width = `${ms / duration * 100}%`;
 			}
@@ -247,12 +251,18 @@ class SCPlayer extends HTMLElement {
  */
 	_onDragNDropHandler(e) {
 		e.preventDefault();
-		const { dropBox } = this._scui;
+		const { classList:clist, firstElementChild:place } = this._scui.dropBox;
 		switch (e.type) {
 		case 'drop':
 			this.addTracksFromFiles(e.dataTransfer.files);
-		case 'dragleave': dropBox.classList.remove('S-active'); break;
-		case 'dragover' : dropBox.classList.add   ('S-active');
+		case 'dragleave':
+			clist.remove('S-active');
+			place.textContent = '';
+			break;
+		case 'dragover':
+			clist.add('S-active');
+			place.textContent = 'Possible Formats:\n'+ SCPlayer.SUPPORTED_FORMATS.join(' ');
+			break;
 		}
 	}
 /**
@@ -281,7 +291,7 @@ class SCPlayer extends HTMLElement {
 				this.selectTrack(el);
 			break;
 		case 'sc-track':
-			if (!ccl.contains('S-active'))
+			if (!pcl.contains('S-trmove') && !ccl.contains('S-current'))
 				this.selectTrack(el);
 			break;
 		case 'sc-play-next':
@@ -297,13 +307,22 @@ class SCPlayer extends HTMLElement {
 				let i = this._cycl - (audio.loop - 1);
 				let c = this._cycl = (i === 1);
 				let l = audio.loop = (i === 2);
-				let m = SCPlayer.PLAY_MODE_SET[i];
-				el.title        = m.title;
-				el.dataset.mode = m.name;
+				el.title        = SCPlayer.PLAY_MODE_SET[i].title;
+				el.dataset.mode = SCPlayer.PLAY_MODE_SET[i].name;
 			}
 			break;
-		case 'sc-download':
-			SCPlayer.download(el.href);
+		case 'sc-move-tracks':
+			if (!pcl.contains('S-active')) {
+				playlist.onpointerdown = (
+					playlist.classList.toggle('S-trmove') ? e => {
+						if (!e.button && e.target !== playlist)
+							this._onTrackMove(e);
+					} : null);
+			}
+			break;
+		case 'sc-shfl-tracks':
+			if (!pcl.contains('S-active'))
+				playlist.append(...SCPlayer.shuffle(playlist.children))
 			break;
 		default:
 			// ...
@@ -312,59 +331,77 @@ class SCPlayer extends HTMLElement {
 /**
  * @param {PointerEvent} e
  */
-	_onBarChange(e, is_play_bar = false) {
+	_onTrackMove({ target:trk, clientY:iy}) {
+		const { playlist, trkPlace } = this._scui;
+		const { classList: Lcs, style:css } = trk;
+		const { height:maxh, top:sy,
+			    width:maxw, left:sx } = playlist.getBoundingClientRect();
 
-		const bar    = is_play_bar ? this._scui.playBar  : this._scui.volBar;
-		const audio  = /* ------- */ this._scui.audio;
-		const parent = is_play_bar ? this._scui.timekind : this._scui.volume;
+		css.top   = `${iy + 10}px`;
+		css.left  = `${sx - 10}px`;
+		css.width = `${maxw - 25}px`;
+
+		Lcs.add('S-freemv');
+		trk.before(trkPlace);
+
+		SCPlayer._bindPointer(({ target:itm, clientY:y, layerY }, is_end = false) => {
+			if (is_end) {
+				css.left = css.top = css.width = null;
+				Lcs.remove('S-freemv');
+				playlist.replaceChild(trk, trkPlace);
+			} else {
+				css.top = `${y + 10}px`;
+				if (playlist !== itm.parentNode) {
+					if ((maxh + sy) < y)
+						playlist.scrollTop += 10;
+					else if (sy > y)
+						playlist.scrollTop -= 10;
+				} else if (itm !== trkPlace && itm !== trk)
+					playlist.insertBefore(trkPlace, layerY <= 10 ? itm : itm.nextElementSibling);
+			}
+		});
+	}
+
+/**
+ * @param {PointerEvent} e
+ */
+	_onBarChange({clientX, clientY}, is_play_bar = false) {
+
+		const { audio, timekind, volume, playBar, volBar } = this._scui;
+		const bar = is_play_bar ? playBar  : volBar;
+		const inc = is_play_bar ? timekind : volume;
 
 		bar.style.width = bar.style.height = null; // reset bar to 100% w:h
-		parent.classList.add('S-hook');
+		inc.classList.add('S-hold'); // stops indicator update
 
-		const { left, width:maxw, // get bar coords and sizes 
-				top, height:maxh } = bar.getBoundingClientRect();
+		const { left:sx, width:maxw, // get bar coords and sizes 
+				top:sy, height:maxh } = bar.getBoundingClientRect();
 
-		const is_vert = maxh > maxw;
-		const hPos = x => {
-			let v = (x -= left) / maxw;
-			if (x < 0)
-				x = v = 0;
-			else if (x > maxw)
-				x = maxw, v = 1.0;
-			bar.style.width = `${x.toFixed()}px`;
-			return v;
-		}
-		const vPos = y => {
-			let v = (y = top + maxh - y) / maxh;
-			if (y < 0)
-				y = v = 0;
-			else if (y > maxh)
-				y = maxh, v = 1.0;
-			bar.style.height = `${y.toFixed()}px`;
-			return v;
-		}
-		const onMove = ({ clientX:x, clientY:y }) => {
-			const v = is_vert ? vPos(y) : hPos(x);
+		const onMove = ({ clientX:x, clientY:y, rangeOffset:v }, is_end = false) => {
+			if (maxh > maxw)
+				 [y,v] = SCPlayer.vPos(y,sy,maxh), bar.style.height = `${y.toFixed()}px`;
+			else [x,v] = SCPlayer.hPos(x,sx,maxw), bar.style.width  = `${x.toFixed()}px`;
 			if (is_play_bar) {
-				parent.dataset.pos = SCPlayer.timeCalc(audio.duration * v);
+				timekind.dataset.pos = SCPlayer.timeCalc((v *= audio.duration));
+				if (is_end)
+					audio.currentTime = v;
 			} else {
-				parent.dataset.percent = (v * 100).toFixed();
+				volume.dataset.percent = (v * 100).toFixed();
 				audio.volume = v;
 			}
+			if (is_end)
+				inc.classList.remove('S-hold');
 		}
-		const onEnd = ({ type:t, clientX:x, clientY:y }) => {
+		SCPlayer._bindPointer(onMove); onMove({clientX, clientY});
+	}
+	static _bindPointer(onMove = () => void 0) {
+		const onEnd = e => {
 			window.removeEventListener('pointercancel', onEnd);
 			window.removeEventListener('pointermove', onMove);
 			window.removeEventListener('pointerup', onEnd);
-			parent.classList.remove('S-hook');
-
-			if (t.endsWith('up') && is_play_bar) {
-				const v = is_vert ? vPos(y) : hPos(x);
-				audio.currentTime = audio.duration * v;
-			}
+			if (e.type.endsWith('up'))
+				onMove(e, true);
 		}
-		onMove(e);
-
 		window.addEventListener('pointercancel', onEnd);
 		window.addEventListener('pointermove', onMove);
 		window.addEventListener('pointerup', onEnd);
@@ -433,6 +470,30 @@ class SCPlayer extends HTMLElement {
 		let h = Math.floor(sec / (60 * 60));
 
 		return `${h ? h +':' : ''}${dm}:${ds}`;
+	}
+	static shuffle(tracks) {
+		const list = Array.from(tracks);
+		for (let j = 1, i = 0; i < list.length; i++, j++) {
+			const n = Math.floor(Math.random() * j); // rand int 0 =< j =< i
+			[list[i], list[n]] = [list[n], list[i]];
+		}
+		return list;
+	}
+	static hPos(x = 0, sx = 0, maxw = 100) {
+		let v = (x -= sx) / maxw;
+		if (x <= 0)
+			x = v = 0;
+		else if (x >= maxw)
+			x = maxw, v = 1.0;
+		return [x,v];
+	}
+	static vPos(y = 0, sy = 0, maxh = 100) {
+		let v = (y = sy + maxh - y) / maxh;
+		if (y <= 0)
+			y = v = 0;
+		else if (y >= maxh)
+			y = maxh, v = 1.0;
+		return [y,v];
 	}
 
 	static _instances_count = 0;

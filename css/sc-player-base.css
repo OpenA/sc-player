@@ -31,6 +31,7 @@ sc-player .sc-track {
 }
 
 sc-player .sc-volume,
+sc-player .sc-box-drop,
 sc-player .sc-play-nav,
 sc-player .sc-play-prev,
 sc-player .sc-play-next,
@@ -42,6 +43,8 @@ sc-player .sc-info-overlay {
 	visibility: hidden;
 }
 
+sc-player           > .sc-box-drop.S-active,
+sc-player:hover     > .sc-box-drop,
 sc-player *:hover   > .sc-artwork.H-gall ~ .sc-cover-slide,
 sc-player .H-prev   ~ .S-played > .sc-play-nav > .sc-play-prev,
 sc-player .H-next   ~ .S-played > .sc-play-nav > .sc-play-next,
@@ -92,6 +95,14 @@ sc-player .sc-box-drop {
 	position: absolute;
 	right: 0; bottom: 0;
 }
+sc-player .sc-box-drop.S-active > .sc-shfl-tracks {
+	white-space: pre-line;
+	word-break: break-word;
+}
+sc-player .sc-box-drop:not(.S-active) > * {
+	display: inline-block;
+	cursor: pointer;
+}
 
 sc-player .sc-track {
 	text-overflow: ellipsis;
@@ -129,6 +140,7 @@ sc-player .sc-bar-volume {
 	height: 100%;
 }
 
-sc-player .S-hidden {
-	display: none;
+sc-player .S-freemv {
+	position: fixed;
+	z-index: 1;
 }

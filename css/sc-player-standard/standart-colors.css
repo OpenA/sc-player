@@ -87,7 +87,7 @@
 .sc-player-standart .sc-volume:after {
 	color: var(--fill-bar1);
 }
-.sc-player-standart .sc-volume.S-hook:after{
+.sc-player-standart .sc-volume.S-hold:after{
 	background-image: linear-gradient(transparent 8%, var(--cont-bg1) 18%, var(--cont-bg1) 84%, transparent 94%);
 }
 .sc-player-standart .sc-bar-buffer {
@@ -125,6 +125,12 @@
 }
 
 /* Info Content Colors */
+.sc-player-standart .S-trmove ~ .sc-box-drop > .sc-move-tracks,
+.sc-player-standart .sc-box-drop > :hover {
+	color: var(--cont-bg1);
+	background-color: var(--fill-bar1);
+}
+.sc-player-standart .sc-box-drop,
 .sc-player-standart .sc-info-overlay {
 	background-color: var(--info-bg1);
 }
@@ -147,10 +153,19 @@
 .sc-player-standart .sc-box-controls {
 	box-shadow: 1px 1px 4px var(--shdw-dep2);
 }
+.sc-player-standart .sc-box-drop {
+	box-shadow: -1px -1px 2px var(--shdw-dep1);
+}
+.sc-player-standart .sc-track.S-freemv,
+.sc-player-standart .sc-track.S-current {
+	box-shadow: 0 1px 1px var(--shdw-dep1);
+}
 
 /* Track item colors */
-.sc-player-standart .sc-track.S-active {
-	box-shadow: 0 1px 1px var(--shdw-dep1);
+.sc-player-standart .sc-track.S-freemv {
+	background-color: var(--plist-bg1);
+}
+.sc-player-standart .sc-track.S-current {
 	background-color: var(--track-bg1);
 	transition: background-color .3s ease-in;
 }

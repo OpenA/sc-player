@@ -14,6 +14,7 @@
 }
 
 /* Content blocks rectangles */
+.sc-player-standart .sc-box-drop.S-active,
 .sc-player-standart .sc-box-controls,
 .sc-player-standart .sc-artwork,
 .sc-player-standart .sc-tracklist,
@@ -51,7 +52,7 @@
 	position: absolute;
 	left: 5px; top: 0;
 }
-.sc-player-standart .sc-volume.S-hook:after {
+.sc-player-standart .sc-volume.S-hold:after {
 	content: '🕪 ' attr(data-percent) '%';
 	padding-right: 2px;
 }
@@ -61,7 +62,7 @@
 	max-width: 0%;
 }
 .sc-player-standart .sc-volume:hover,  .sc-player-standart *:hover > .sc-bar-volume,
-.sc-player-standart .sc-volume.S-hook, .sc-player-standart .S-hook > .sc-bar-volume {
+.sc-player-standart .sc-volume.S-hold, .sc-player-standart .S-hold > .sc-bar-volume {
 	transition-delay: 0s;
 	max-width: 100px;
 }
@@ -149,10 +150,30 @@
 }
 
 /* Add track btn and drop-box overlay */
-.sc-player-standart .sc-add-track:before {
-	content: '+';
-	padding: 0 4px;
-	font: bold 1.2em serif;
+
+.sc-player-standart .sc-shfl-tracks:before { content: '⤭'; }
+.sc-player-standart .sc-move-tracks:before { content: '≡'; }
+.sc-player-standart .sc-add-files:before   { content: '+'; }
+.sc-player-standart .sc-box-drop > * {
+	font: bold 1.4em / 22px serif;
+	text-align: center;
+	min-width: 22px;
+	padding: 4px;
+}
+.sc-player-standart .sc-tracklist.S-trmove {
+	list-style-type: "⠿ ";
+}
+.sc-player-standart .S-active > .sc-add-files:before,
+.sc-player-standart .S-active > .sc-shfl-tracks:before { content: ''; }
+.sc-player-standart .S-active > .sc-move-tracks:before { content: '🡃'; }
+.sc-player-standart .S-active > .sc-shfl-tracks {
+	padding: 18px 9px;
+	font-weight: normal;
+	font-variant: small-caps;
+}
+.sc-player-standart .S-active > .sc-move-tracks {
+	font-size: 140px;
+	line-height: 70px;
 }
 
 /* Wide formation */
@@ -176,6 +197,7 @@
 	width: 100%;
 	height: 150px;
 }
+.sc-player-standart.sc-P-wide .sc-box-drop.S-active,
 .sc-player-standart.sc-P-wide .sc-tracklist {
 	width: 100%;
 	min-height: 160px;
