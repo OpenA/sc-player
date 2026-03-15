@@ -261,7 +261,7 @@ class SCPlayer extends HTMLElement {
 			break;
 		case 'dragover':
 			clist.add('S-active');
-			place.textContent = 'Possible Formats:\n'+ SCPlayer.SUPPORTED_FORMATS.join(' ');
+			place.textContent = `${SCPlayer.SUPPORTED_FORMATS.join(' ')} + jpg png webp`;
 			break;
 		}
 	}

@@ -160,9 +160,6 @@
 	min-width: 22px;
 	padding: 4px;
 }
-.sc-player-standart .sc-tracklist.S-trmove {
-	list-style-type: "⠿ ";
-}
 .sc-player-standart .S-active > .sc-add-files:before,
 .sc-player-standart .S-active > .sc-shfl-tracks:before { content: ''; }
 .sc-player-standart .S-active > .sc-move-tracks:before { content: '🡃'; }

@@ -14,7 +14,7 @@
 	--shdw-dep1: rgba(0,0,0,.2);
 	--shdw-dep2: rgba(0,0,0,.2);
 
-	--plist-bg1: #e6e6e6 linear-gradient(#e6e6e6, #fefefe);
+	--plist-bg1: #e6e6e6;
 	--awrk-col1: #e1e1e1; --awrk-bg1: #cecece;
 	--awrk-col2: #7e7e7e; --awrk-bg2: #c5bd9a;
 }
@@ -70,7 +70,7 @@
 	background-color: var(--awrk-bg1);
 }
 .sc-player-standart .sc-tracklist {
-	background: var(--plist-bg1);
+	background-color: var(--plist-bg1);
 }
 
 /* Volume + Timescale */
@@ -162,13 +162,11 @@
 }
 
 /* Track item colors */
-.sc-player-standart .sc-track.S-freemv {
-	background-color: var(--plist-bg1);
-}
 .sc-player-standart .sc-track.S-current {
 	background-color: var(--track-bg1);
 	transition: background-color .3s ease-in;
 }
+.sc-player-standart .sc-track.S-freemv,
 .sc-player-standart .sc-track:hover {
 	background-color: var(--track-bg2);
 }

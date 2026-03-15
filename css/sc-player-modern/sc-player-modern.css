@@ -116,7 +116,7 @@
 .sc-player-modern .sc-track:hover {
 	background-color: rgba(99, 99, 99, .9);
 }
-.sc-player-modern .sc-track.S-active {
+.sc-player-modern .sc-track.S-current {
 	background-color: rgba(77, 77, 77, .7);
 }
 .sc-player-modern.sc-P-vertical .sc-tracklist {
@@ -154,7 +154,7 @@
 }
 .sc-player-modern .sc-play-prev,
 .sc-player-modern .sc-play-next {
-	background-position: right bottom;
+	background-position: center bottom;
 	border-radius: 0 4px 4px 0;
 }
 .sc-player-modern .sc-play-prev {
@@ -167,7 +167,7 @@
 .sc-player-modern .sc-info-toggle {
 	background-color: rgba(0,0,0,.5);
 	background-image: url('img/info-modern.svg');
-	background-size: 200%;
+	background-size: 300%;
 	width: 17px; height: 17px;
 }
 .sc-player-modern .sc-play-mode:before { content: attr(data-mode); }
@@ -204,7 +204,7 @@
 	visibility: hidden;
 }
 .sc-player-modern .S-detail > .sc-info-toggle {
-	background-position: 0 0;
+	background-position: left top;
 	visibility: visible;
 }
 
@@ -233,7 +233,7 @@
 	left:0; top:0;
 	display: block;
 	border-radius: 10px;
-	background-position: right top;
+	background-position: center top;
 	outline: 1px solid #ddd;
 }
 .sc-player-modern .sc-volume[data-percent="0"] > .sc-bar-volume:before {

@@ -18,6 +18,9 @@ sc-player .sc-tracklist {
 	list-style-type: decimal-leading-zero;
 	overflow: auto;
 }
+sc-player .sc-tracklist.S-trmove {
+	list-style-type: "⁝⁝ ";
+}
 
 sc-player .sc-cover-slide,
 sc-player .sc-info-toggle,

@@ -1,5 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 34 9">
-	<g fill="none" stroke="#e1e1e1">
-		<path id="mp_down_angle" stroke-linecap="round" stroke-width="2" d="M 1,1 17,8 33,1"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 14 16">
+	<g fill="#838383">
+		<path id="mp_down_angle" d="M 2.7,0 3,1.5 h 8 L 11.3,0 Z m 0.5,3 0.3,1.5 h 7 L 10.8,3 Z M 3.7,6 4.2,8.5 H 0 L 7,16 14,8.5 H 9.8 L 10.3,6 Z"/>
 	</g>
 </svg>

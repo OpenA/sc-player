@@ -8,8 +8,8 @@
 	--art-fill: #fbfdff; --re-color: invert(40%);
 	--bg1-fill: #eee;
 	--bg2-fill: #fff;
-	--vol-lean: url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 138 33" fill="none" stroke="rgb(161,161,161)" stroke-width="2"><path d="M 137,2 0,32 h 137 z"/></svg>');
-	--vol-full: url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 138 33" stroke="none" fill="rgb(161,161,161)" stroke-width="2"><path d="M 137,2 0,32 h 137 z"/></svg>');
+	--vol-lean: url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 138 33" fill="none" stroke="white" stroke-width="2"><path d="M 137,2 0,32 h 137 z"/></svg>');
+	--vol-full: url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 138 33" stroke="none" fill="white" stroke-width="2"><path d="M 137,2 0,32 h 137 z"/></svg>');
 }
 .sc-player-oldband {
 	font: .7em sans-serif;
@@ -94,8 +94,10 @@
 	border: 1px solid var(--bg1-fill);
 	border-radius: 2px;
 }
-.sc-player-oldband .sc-track:nth-child(odd) {
-	background-color: var(--bg2-fill);
+.sc-player-oldband .sc-track:nth-child(even) { background-color: var(--bg1-fill); }
+.sc-player-oldband .sc-track:nth-child(odd)  { background-color: var(--bg2-fill); }
+.sc-player-oldband .sc-track.S-freemv {
+	box-shadow: 0 1px 2px rgba(0,0,0,.4);
 }
 .sc-player-oldband .sc-track:after {
 	text-align: right;
@@ -108,7 +110,7 @@
 	background-color: var(--bar-fill);
 	color: var(--bg2-fill);
 }
-.sc-player-oldband .sc-track.S-active {
+.sc-player-oldband .sc-track.S-current {
 	background-color: var(--txt-col1);
 	outline: 1px solid var(--bar-fill);
 	color: var(--bg1-fill);
@@ -121,31 +123,35 @@
 	background: var(--vol-lean) no-repeat top center / 100%;
 	left: 115px; bottom: var(--vol-vpad);
 	width: 70px; height: 17px;
+	filter: var(--re-color);
 }
 .sc-player-oldband .sc-bar-volume {
 	background: var(--vol-full) no-repeat bottom center / 100%;
 }
+.sc-player-oldband .sc-box-drop:not(.S-active) > *,
+.sc-player-oldband .sc-cover-slide,
 .sc-player-oldband .sc-volume:after,
 .sc-player-oldband .sc-volume:before {
 	content: '';
-	position: absolute;
-	top: 0;
-	padding: 8.5px;
+	display: inline-block;
+	width: 18px;
 	cursor: pointer;
-	filter: var(--re-color);
+	height: 18px;
 	background-image: url('img/info-modern.svg');
-	background-size: 200%;
+	background-size: 300%;
 }
 .sc-player-oldband .sc-volume:before {
 	background-position: top left;
-	left: -9px;
+	left: -11px; top: 0;
+	position: absolute;
 }
 .sc-player-oldband .sc-volume:after {
-	background-position: top right;
-	right: -16px;
+	background-position: top center;
+	right: -18px; top: 0;
+	position: absolute;
 }
 .sc-player-oldband .sc-volume[data-percent="0"]:after {
-	background-position: center right;
+	background-position: center center;
 }
 
 /* Playlist navigation panel */
@@ -174,11 +180,12 @@
 
 /* Media Info */
 .sc-player-oldband .sc-cover-slide {
-	background: rgba(0,0,0,.4) url('img/down-angle.svg') no-repeat center / 20%;
+	background-color: var(--txt-col1);
 	position: absolute;
-	top: 92px; height: 13px;
-	left: 5px; width: 100px;
-	cursor: pointer;
+	bottom: 0; left: 45px;
+	border: 1px solid rgba(0,0,0,.2);
+	border-radius: 5px 5px 0 0;
+	background-position: left bottom;
 }
 .sc-player-oldband .sc-info-overlay {
 	left: 105px; top: 0;
@@ -213,4 +220,33 @@
 }
 .sc-player-oldband .sc-info-artist:empty:before {
 	content: '- - -';
+}
+
+/* DropBox and shufl buttons */
+.sc-player-oldband .sc-box-drop:not(.S-active) {
+	background-color: var(--txt-col1);
+	border-radius: 5px 5px 0 0;
+	box-shadow: 0 -1px 2px rgba(0,0,0,.4);
+	line-height: 0;
+	overflow: hidden;
+	right: 9px;
+}
+.sc-player-oldband .S-trmove ~ .sc-box-drop:not(.S-active) > .sc-move-tracks,
+.sc-player-oldband /*-------*/ .sc-box-drop:not(.S-active) > :hover {
+	background-color: var(--bar-fill);
+}
+.sc-player-oldband .S-active > .sc-move-tracks {
+	background: url('img/down-angle.svg') no-repeat center;
+	padding: 60px;
+	margin: 10px auto;
+}
+.sc-player-oldband .sc-move-tracks { padding: 2px; background-position: right top;    }
+.sc-player-oldband .sc-add-files   { padding: 2px; background-position: right center; }
+.sc-player-oldband .sc-shfl-tracks { padding: 2px; background-position: right bottom; }
+.sc-player-oldband .sc-box-drop.S-active {
+	background-color: var(--bg2-fill);
+	font: small-caps 16px sans-serif;
+	text-align: center;
+	top: 113px; left: 0;
+	padding: 8px;
 }
