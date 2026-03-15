@@ -37,13 +37,13 @@
 /* Toggle Play/Pause */
 .sc-player-oldband .sc-play-toggle {
 	position: absolute;
-	height: 40px; top: 10px;
-	width: 40px; right: 10px;
+	height: 36px; top: 5px;
+	width: 36px; right: 5px;
 	filter: var(--re-color);
-	background: url('img/play-modern.svg') no-repeat center;
+	background: url('img/play-modern.svg') no-repeat top left / 200%;
 }
 .sc-player-oldband .S-played:not(.S-paused) > .sc-play-toggle {
-	background-image: url('img/pause-modern.svg');
+	background-position: top right;
 }
 
 /* Toggle Play/Pause */
@@ -63,16 +63,18 @@
 	content: '- -:- -';
 }
 .sc-player-oldband .sc-waveform {
-	padding-left: var(--slider-w);
-	background: linear-gradient(90deg, var(--bar-fill) var(--slider-w), transparent var(--slider-w));
+	border-width: 0 9px;
+	border-style: none solid;
+	border-left-color: var(--bar-fill);
+	border-right-color: transparent;
 }
 .sc-player-oldband .sc-bar-plying {
 	background-color: var(--bar-fill);
 }
 .sc-player-oldband .sc-bar-plying:after {
 	content: '';
-	width: var(--slider-w);
-	height: 12px; top: -2px; right: 0;
+	width: 18px; right: -9px;
+	height: 12px; top: -2px;
 	background-color: var(--bg2-fill);
 	box-shadow: 0 1px 2px rgba(0,0,0,.2);
 	border: 1px solid var(--bar-fill);
@@ -141,7 +143,8 @@
 	background-size: 300%;
 }
 .sc-player-oldband .sc-volume:before {
-	background-position: top left;
+	background-position: right center;
+	rotate: 45deg;
 	left: -11px; top: 0;
 	position: absolute;
 }
@@ -157,13 +160,14 @@
 /* Playlist navigation panel */
 .sc-player-oldband .sc-play-nav {
 	position: absolute;
-	top: 53px; right: 10px;
+	top: 45px; right: 5px;
 }
 .sc-player-oldband .sc-play-prev,
 .sc-player-oldband .sc-play-next {
 	position: relative;
-	padding: 6px 10px;
-	background: url('img/forvard-button.svg') no-repeat center / 100%;
+	padding: 11px;
+	background: url('img/info-modern.svg') no-repeat center bottom / 300%;
+	filter: var(--re-color);
 }
 .sc-player-oldband .sc-play-prev {
 	rotate: 180deg;
@@ -236,8 +240,10 @@
 	background-color: var(--bar-fill);
 }
 .sc-player-oldband .S-active > .sc-move-tracks {
-	background: url('img/down-angle.svg') no-repeat center;
-	padding: 60px;
+	background: url('img/info-modern.svg') no-repeat left top / 300%;
+	filter: var(--re-color);
+	width : 120px;
+	height: 120px;
 	margin: 10px auto;
 }
 .sc-player-oldband .sc-move-tracks { padding: 2px; background-position: right top;    }

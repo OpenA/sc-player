@@ -1,3 +1,10 @@
-<svg width="24px" height="24px" viewBox="0 0 24 24" fill="#ddd" stroke="#ddd" xmlns="http://www.w3.org/2000/svg">
-	<path id="MP_Play" stroke-width="2" stroke-linejoin="round" d="M 5,1 V 23 L 23,12 Z"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 40">
+	<g display="none">
+		<rect fill="#b91362" width="40" height="40" x="40" y="0"/>
+		<rect fill="#3c13ff" width="40" height="40" x="0"  y="0"/>
+	</g>
+	<g fill="#ddd" stroke="#ddd" stroke-width="2" stroke-linejoin="round">
+		<path id="mp_play"  d="M 13,9 V 31 L 31,20 Z"/>
+		<path id="mp_pause" d="M 50,8 V 32 h 7 V 8 Z m 13,0 V 32 h 7 V 8 Z"/>
+	</g>
 </svg>
