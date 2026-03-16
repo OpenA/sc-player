@@ -37,13 +37,13 @@
 /* Toggle Play/Pause */
 .sc-player-oldband .sc-play-toggle {
 	position: absolute;
-	height: 36px; top: 5px;
-	width: 36px; right: 5px;
+	height: 38px; top: 5px;
+	width: 38px; right: 5px;
 	filter: var(--re-color);
-	background: url('img/play-modern.svg') no-repeat top left / 200%;
+	background: url('img/play-modern.svg') no-repeat center left / 200%;
 }
 .sc-player-oldband .S-played:not(.S-paused) > .sc-play-toggle {
-	background-position: top right;
+	background-position: center right;
 }
 
 /* Toggle Play/Pause */

@@ -29,6 +29,7 @@ h2 {
 
 .fx-cell {
 	margin-right: 1em;
+	min-height: 400px;
 }
 #fx-horiz {
 	display: flex;
@@ -47,3 +48,24 @@ h2 {
 	box-shadow: 1px 2px 4px rgba(0,0,0,.8);
 	margin-left: 5%;
 }
+
+.o-styles {
+	border: 1px dotted gray;
+	box-shadow: 0 1px 4px #111;
+	text-shadow: -1px 1px 1px black;
+	color: gray;
+	font: bold 1em sans-serif;
+	padding-right: 18px;
+}
+.o-styles li {
+	cursor: pointer;
+}
+.o-styles li:hover {
+	text-decoration: underline;
+}
+.o-styles li:not(.selected) {
+	list-style-type: "  ";
+}
+.P-vertical:before   { content: 'Vertical'; }
+.P-horizontal:before { content: 'Horizontal'; }
+.S-oldband:before    { content: 'Wide (OldBand style)'; }

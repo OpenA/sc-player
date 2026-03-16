@@ -38,10 +38,10 @@
 /*******************************/
 .sc-player-modern .sc-play-toggle {
 	position: absolute;
-	width: 40px; left: 76px;
-	height: 40px; top: 76px;
+	width: 38px; left: 76px;
+	height: 38px; top: 76px;
 	outline: 2px solid #ddd;
-	border: 4px solid #333;
+	border: 6px solid #333;
 	border-radius: 100%;
 	background: #333 url('img/play-modern.svg') no-repeat center left / 200%;
 	opacity: .8;

@@ -12,16 +12,42 @@
 		<a class="standart-player" href="sc-player-standard.html">Standart Player</a>
 		<h1>Modern Player</h1>
 		<div id="fx-horiz">
-			<div class="fx-cell"></div>
+			<div class="fx-cell o-styles">
+				<ul>
+					<li class="P-horizontal"></li>
+					<li class="P-vertical"></li>
+					<li class="S-oldband"></li>
+				</ul>
+			</div>
 			<div class="fx-cell"></div>
 		</div>
 		<script type="text/javascript">
+			const cv = location.hash.substring(1);
 			const fx = document.getElementById('fx-horiz');
-			const sp = new SCPlayer({ theme: 'modern'  });
-			const wp = new SCPlayer({ theme: 'oldband' });
 
-			fx.children[0].append(wp);
-			fx.children[1].append(sp);
+			let th = cv.endsWith  ('band') ? 'oldband'  : 'modern'
+			let vp = cv.startsWith('vert') ? 'vertical' : 'horizontal';
+
+			const sc = new SCPlayer({ theme: th, variant: vp });
+			const li = fx.querySelectorAll(`li.P-${vp}, li.S-${th}`);
+
+			li[li.length - 1].classList.add('selected');
+			fx.children[1].append(sc);
+			fx.children[0].onclick = ({ target: el }) => {
+				let [opt = '', sel = ''] = el.classList;
+				if (opt.startsWith('S') && sel !== 'selected') {
+					sc.className = `sc-player-${opt = opt.substring(2)}`;
+				} else
+				if (opt.startsWith('P') && sel !== 'selected') {
+					sc.className = `sc-player-modern sc-P-${opt = opt.substring(2)}`;
+				} else
+					return;
+				for (const ch of el.parentNode.children) {
+					ch.classList.remove('selected');
+				}
+				el.classList.add('selected');
+				location.hash = opt;
+			};
 		</script>
 		<div class="footer">
 			<h2>minimalistic skin for the dynamic insertion</h2>

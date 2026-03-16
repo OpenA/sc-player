@@ -70,18 +70,20 @@
 /* Play Controls */
 .sc-player-standart .sc-play-toggle {
 	position: absolute;
-	top: 40%; left: 40%;
+	height: 50px; top: 110px;
+	width: 50px; left: 110px;
 	border-radius: 100%;
 	border: 2px solid white;
 }
 .sc-player-standart .sc-play-toggle:before {
 	content: '';
-	padding: 25px;
-	display: block;
-	background: url('img/play-standart.svg') no-repeat center / 30%;
+	position: absolute;
+	bottom: 15px; top: 15px;
+	right: 15px; left: 15px;
+	background: url('img/play-standart.svg') no-repeat center left / 300%;
 }
 .sc-player-standart .S-played:not(.S-paused) > .sc-play-toggle:before {
-	background-image: url('img/pause-standart.svg');
+	background-position: center right;
 }
 .sc-player-standart .sc-waveform:after {
 	content: '';

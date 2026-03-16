@@ -1,64 +1,67 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<meta charset="utf-8">
-		<title>SC player example: Standard Skin</title>
-		<link rel="stylesheet" href="styles/sc-player-standard.css" type="text/css">
-		<link rel="stylesheet" type="text/css" href="../css/sc-player-standard/standart-skel.css">
-		<link rel="stylesheet" type="text/css" href="../css/sc-player-standard/standart-colors.css">
-		<script type="text/javascript" src="../js/sc-player.js"></script>
-		<script type="text/javascript">
-			window.onload = e => {
-				const fx = document.body.querySelectorAll('.fx-vert, .fx-super');
-				const sp = new SCPlayer({ variant: 'vertical', colors: 'blue' });
-				const wp = new SCPlayer({ variant: 'wide'    , colors: 'orange' });
 
-				fx[0].children[0].onclick = // +>
-				fx[1].children[0].onclick = _onClkAct;
-				fx[0].append(sp);
-				fx[1].append(wp);
-			}
-			const _onClkAct = ({ target }) => {
-				const parent = target.parentNode;
-				let [opt='',sel=''] = target.classList;
-				if (opt.startsWith('col') && sel != 'selected') {
-					const player = parent.nextElementSibling;
-					opt = opt.substring(4);
-					for (const { classList: cl } of parent.children)
-						cl.remove('selected');
-					player.classList.remove('sc-C-orange', 'sc-C-blue', 'sc-C-green');
-					player.classList.add(`sc-C-${opt}`);
-					target.classList.add('selected');
-				} else if (opt.startsWith('pos')) {
-					const player = parent.nextElementSibling;
-					sel = opt.substring(4),
-					opt = sel.startsWith('vert') ? 'horizontal' : 'vertical';
-					player.classList.replace(`sc-P-${sel}`, `sc-P-${opt}`);
-					target.classList.replace(`pos-${sel}` , `pos-${opt}`);
+<head>
+	<meta charset="utf-8">
+	<title>SC player example: Standard Skin</title>
+	<link rel="stylesheet" href="styles/sc-player-standard.css" type="text/css">
+	<link rel="stylesheet" type="text/css" href="../css/sc-player-standard/standart-skel.css">
+	<link rel="stylesheet" type="text/css" href="../css/sc-player-standard/standart-colors.css">
+	<script type="text/javascript" src="../js/sc-player.js"></script>
+	<script type="text/javascript">
+		document.addEventListener('DOMContentLoaded', () => {
+			const cv = location.hash.substring(1);
+			const fx = document.body.querySelector('.fx-cont');
+
+			let vid = cv.startsWith('wide') ? 'wide' : cv.startsWith('horiz') ? 'horizontal' : 'vertical';
+			let col = cv.endsWith  ('blue') ? 'blue' : cv.endsWith  ('green') ? 'green'      : 'orange';
+
+			const sc = new SCPlayer({ variant: vid, colors: col });
+			const li = fx.querySelectorAll(`li.P-${vid}, li.C-${col}`);
+
+			li[0].classList.add('selected');
+			li[1].classList.add('selected');
+			fx.children[1].append(sc);
+			fx.children[0].onclick = ({ target: el }) => {
+				let [opt = '', sel = ''] = el.classList;
+				if ((opt.startsWith('C') || opt.startsWith('P')) && sel !== 'selected') {
+					for (const { classList: cl } of el.parentNode.children) {
+						if (cl[1] === 'selected') {
+							sel = cl[0];
+							cl.remove('selected');
+						}
+					}
+					sc.classList.replace(`sc-${sel}`, `sc-${opt}`);
+					el.classList.add('selected');
+					location.hash = `${
+						opt.startsWith('P') ? (vid = opt.substring(2)) : vid
+					}-${
+						opt.startsWith('C') ? (col = opt.substring(2)) : col
+					}`;
 				}
-			}
-		</script>
-	</head>
-	<body>
-		<a href="sc-player-modern.html">Modern Player</a>
-		<h1>Standart Skin</h1>
-		<div class="fx-cont">
-			<div class="fx-vert">
-				<h2>
-					<span class="col-green"></span>
-					<span class="col-blue selected"></span>
-					<span class="col-orange"></span>
-					<span class="pos-vertical"></span>
-				</h2>
-			</div>
-			<div class="fx-super">
-				<h2>wide
-					<span class="col-green"></span>
-					<span class="col-blue"></span>
-					<span class="col-orange selected"></span>
-				</h2>
-			</div>
-		</div>
-		<div class="footer">2025</div>
-	</body>
+			};
+		});
+	</script>
+</head>
+
+<body>
+	<a href="sc-player-modern.html">Modern Player</a>
+	<h1>Standart Skin</h1>
+	<div class="fx-cont">
+		<h2 class="fx-vert">
+			<ul class="o-colors">
+				<li class="C-green"></li>
+				<li class="C-blue"></li>
+				<li class="C-orange"></li>
+			</ul>
+			<ul class="o-aligns">
+				<li class="P-horizontal"></li>
+				<li class="P-vertical"></li>
+				<li class="P-wide"></li>
+			</ul>
+		</h2>
+		<div class="fx-super"></div>
+	</div>
+	<div class="footer">2025</div>
+</body>
 </html>

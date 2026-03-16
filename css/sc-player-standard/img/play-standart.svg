@@ -1,6 +1,10 @@
-<svg viewBox="0 0 164 222" xmlns="http://www.w3.org/2000/svg">
-	<g id="SC_Play" fill="white">
-		<path fill-opacity="0.3" d="m 1,1 h 10 l 152,104 v 10 L 11,221 H 1 V 211 L 45,110 1,11 Z"/>
-		<path d="M 55,109 8,5 160,109 8,216 Z"/>
+<svg viewBox="0 0 540 180" xmlns="http://www.w3.org/2000/svg">
+	<g display="none">
+		<rect fill="#6d333b" width="180" height="180" x="0"   y="0"/>
+		<rect fill="#1f4943" width="180" height="180" x="360" y="0"/>
+	</g>
+	<g fill="white" stroke="white" stroke-width="12" stroke-opacity=".3">
+		<path id="mp_play" d="M 69,89 32,6 152,89 32,174 Z"/>
+		<path id="mp_pause" d="m 382,4 v 172 h 40 V 4 Z m 96,0 v 172 h 40 V 4 Z"/>
 	</g>
 </svg>
