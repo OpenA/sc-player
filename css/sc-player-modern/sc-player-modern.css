@@ -86,6 +86,7 @@
 /*******************************/
 /********** Trackslist *********/
 /*******************************/
+.sc-player-modern .sc-box-drop.S-active,
 .sc-player-modern .sc-tracklist {
 	position: absolute;
 	width: 200px; left: 0;
@@ -142,7 +143,7 @@
 }
 .sc-player-modern .sc-play-nav {
 	position: absolute;
-	right: 5px; bottom: 15px;
+	right: 30px; top: 34px;
 }
 .sc-player-modern .sc-play-prev,
 .sc-player-modern .sc-play-next {
@@ -156,6 +157,7 @@
 .sc-player-modern .sc-play-next,
 .sc-player-modern .sc-cover-slide,
 .sc-player-modern .sc-bar-volume:before,
+.sc-player-modern .sc-box-drop:not(.S-active) > *,
 .sc-player-modern .sc-info-toggle {
 	background-color: rgba(0,0,0,.5);
 	background-image: url('img/info-modern.svg');
@@ -171,6 +173,9 @@
 	text-align: center;
 	min-width: 18px;
 }
+.sc-player-modern .S-trmove ~ .sc-box-drop:not(.S-active) > .sc-move-tracks,
+.sc-player-modern /*-------*/ .sc-box-drop:not(.S-active) > :hover,
+.sc-player-modern .sc-play-nav > :hover,
 .sc-player-modern .sc-play-mode:hover,
 .sc-player-modern .sc-info-toggle:hover {
 	background-color: rgba(85,85,85,.5);
@@ -192,13 +197,14 @@
 .sc-player-modern .S-played .sc-info-artist:empty:after {
 	content: '- - - -';
 }
-.sc-player-modern:not(:hover):not(:focus) .sc-info-toggle {
+.sc-player-modern .sc-box-controls.S-detail ~ .sc-box-drop:not(.S-active),
+.sc-player-modern .sc-tracklist:empty /*-*/ ~ .sc-box-drop:not(.S-active) > :not(.sc-add-files),
+.sc-player-modern:not(:hover):not(:focus) .sc-info-overlay:not(.S-detail) > .sc-info-toggle {
 	visibility: hidden;
 }
 .sc-player-modern .S-detail > .sc-info-toggle {
 	background-position: right center;
 	rotate: 45deg;
-	visibility: visible;
 }
 
 /*******************************/
@@ -244,3 +250,40 @@
 .sc-player-modern:not(:hover):not(:focus) .sc-bar-volume { transition-delay: .7s; max-height: 0;  }
 .sc-player-modern:not(:hover):not(:focus) .sc-volume     { transition-delay: .7s; max-height: 17px; top: 9px;  }
 .sc-player-modern:not(:hover):not(:focus) .sc-tracklist  { transition-delay: .7s; top: 0; left: 0; }
+
+/* DropBox and shufl buttons */
+.sc-player-modern .sc-box-drop:not(.S-active) {
+	line-height: 0;
+	bottom: 18px;
+	right: 5px;
+}
+.sc-player-modern .sc-tracklist:empty ~ .sc-box-drop:not(.S-active) {
+	bottom: 5px;
+}
+.sc-player-modern .sc-box-drop.S-active > .sc-shfl-tracks {
+	padding: 18px 4px;
+}
+.sc-player-modern .sc-box-drop.S-active > .sc-move-tracks {
+	background: url('img/info-modern.svg') no-repeat left top / 300%;
+	width : 60px;
+	height: 60px;
+	margin: 0 auto;
+}
+.sc-player-modern .sc-move-tracks {
+	background-position: right top;
+}
+.sc-player-modern .sc-add-files {
+	border-radius: 0 4px 4px 0;
+	background-position: right center;
+}
+.sc-player-modern .sc-shfl-tracks {
+	border-radius: 4px 0 0 4px;
+	background-position: right bottom;
+}
+.sc-player-modern .sc-box-drop.S-active {
+	font-size: 14px;
+	text-align: center;
+	font-variant: petite-caps;
+}
+.sc-player-modern.sc-P-vertical   .sc-box-drop.S-active { top : 200px; }
+.sc-player-modern.sc-P-horizontal .sc-box-drop.S-active { left: 200px; }

@@ -47,7 +47,7 @@ class SCPlayer extends HTMLElement {
 		sc_player.className = `sc-player-${theme} sc-P-${variant} sc-C-${colors}`;
 		sc_ui.trkPlace = document.createTextNode('🢖 · · · · · · · · · · 🢔');
 		sc_dropbx.append(sc_shufl , sc_trmove);
-		sc_player.append(sc_tracks, sc_dropbx, sc_ctrlbx);
+		sc_player.append(sc_tracks, sc_ctrlbx, sc_dropbx);
 		sc_ctrlbx.append(sc_artwrk, sc_scover, sc_tscale, sc_timein, sc_volume, sc_play, sc_inflay, sc_info);
 		sc_inflay.append(sc_title , sc_artist, sc_lirika);
 		sc_volume.append(sc_volbar);
