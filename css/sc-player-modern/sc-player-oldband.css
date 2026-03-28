@@ -134,21 +134,21 @@
 .sc-player-oldband .sc-cover-slide,
 .sc-player-oldband .sc-volume:after,
 .sc-player-oldband .sc-volume:before {
-	content: '';
-	display: inline-block;
+	display: block;
 	width: 18px;
-	cursor: pointer;
 	height: 18px;
 	background-image: url('img/info-modern.svg');
 	background-size: 300%;
 }
 .sc-player-oldband .sc-volume:before {
+	content: ''; cursor: pointer;
 	background-position: right center;
 	rotate: 45deg;
 	left: -11px; top: 0;
 	position: absolute;
 }
 .sc-player-oldband .sc-volume:after {
+	content: ''; cursor: pointer;
 	background-position: top center;
 	right: -18px; top: 0;
 	position: absolute;

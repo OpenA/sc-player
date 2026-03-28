@@ -43,7 +43,6 @@ class SCPlayer extends HTMLElement {
 		const sc_shufl  = /* .......... */ SCPlayer.cNode('sc-shfl-tracks');
 		const sc_trmove = /* .......... */ SCPlayer.cNode('sc-move-tracks');
 
-		sc_volbar.style.width = '100%';
 		sc_player.className = `sc-player-${theme} sc-P-${variant} sc-C-${colors}`;
 		sc_ui.trkPlace = document.createTextNode('🢖 · · · · · · · · · · 🢔');
 		sc_dropbx.append(sc_shufl , sc_trmove);
@@ -221,18 +220,18 @@ class SCPlayer extends HTMLElement {
  */
 	_onMediaHandler({ type }) {
 		const { currTrack, timekind, ctrlBox, audio, playBar } = this._scui;
-		const { currentTime: ms, duration } = audio;
+		const { currentTime: ms, duration: d } = audio;
 
 		switch (type) {
 		case 'loadedmetadata':
 			currTrack.dataset.duration = // vv v
-			timekind.dataset.duration = SCPlayer.timeCalc(duration);
+			timekind.dataset.duration = SCPlayer.timeCalc(d);
 			break;
 		case 'timeupdate':
 			// no effeck
 			if(!timekind.classList.contains('S-hold')) {
 				timekind.dataset.pos = SCPlayer.timeCalc(ms);
-				playBar.style.width = `${ms / duration * 100}%`;
+				playBar.style.setProperty('--bar-ind',`${d ? Math.floor(ms/d*10000)/100 : 0}%`);
 			}
 			break;
 		case 'play' : ctrlBox.classList.remove('S-paused');
@@ -371,22 +370,22 @@ class SCPlayer extends HTMLElement {
 		const bar = is_play_bar ? playBar  : volBar;
 		const inc = is_play_bar ? timekind : volume;
 
-		bar.style.width = bar.style.height = null; // reset bar to 100% w:h
+		bar.style.setProperty('--bar-ind','100%'); // reset bar to 100% w:h
 		inc.classList.add('S-hold'); // stops indicator update
 
 		const { left:sx, width:maxw, // get bar coords and sizes 
 				top:sy, height:maxh } = bar.getBoundingClientRect();
 
-		const onMove = ({ clientX:x, clientY:y, rangeOffset:v }, is_end = false) => {
-			if (maxh > maxw)
-				 [y,v] = SCPlayer.vPos(y,sy,maxh), bar.style.height = `${y.toFixed()}px`;
-			else [x,v] = SCPlayer.hPos(x,sx,maxw), bar.style.width  = `${x.toFixed()}px`;
+		const onMove = ({ clientX:x, clientY:y }, is_end = false) => {
+			let v = SCPlayer.dPos(x,y,sx,sy,maxw,maxh);
+			let p = (v * 100).toFixed(2);
+			bar.style.setProperty('--bar-ind',`${p}%`);
 			if (is_play_bar) {
 				timekind.dataset.pos = SCPlayer.timeCalc((v *= audio.duration));
 				if (is_end)
 					audio.currentTime = v;
 			} else {
-				volume.dataset.percent = (v * 100).toFixed();
+				volume.dataset.percent = p.substring(0, p.length - 3);
 				audio.volume = v;
 			}
 			if (is_end)
@@ -479,21 +478,13 @@ class SCPlayer extends HTMLElement {
 		}
 		return list;
 	}
-	static hPos(x = 0, sx = 0, maxw = 100) {
-		let v = (x -= sx) / maxw;
-		if (x <= 0)
-			x = v = 0;
-		else if (x >= maxw)
-			x = maxw, v = 1.0;
-		return [x,v];
-	}
-	static vPos(y = 0, sy = 0, maxh = 100) {
-		let v = (y = sy + maxh - y) / maxh;
-		if (y <= 0)
-			y = v = 0;
-		else if (y >= maxh)
-			y = maxh, v = 1.0;
-		return [y,v];
+	static dPos(x=0, y=0, sx=0, sy=0, maxw=100, maxh=100) {
+		let vmax, v;
+		if (maxh > maxw)
+			vmax = maxh, v = sy + maxh - y;
+		else
+			vmax = maxw, v = x - sx;
+		return v <= 0 ? 0 : v >= vmax ? 1.0 : Math.floor(v/vmax * 1e4) / 1e4;
 	}
 
 	static _instances_count = 0;

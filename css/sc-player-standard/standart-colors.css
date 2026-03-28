@@ -126,7 +126,7 @@
 
 /* Info Content Colors */
 .sc-player-standart .S-trmove ~ .sc-box-drop > .sc-move-tracks,
-.sc-player-standart .sc-box-drop > :hover {
+.sc-player-standart .sc-box-drop:not(.S-active) > :hover {
 	color: var(--cont-bg1);
 	background-color: var(--fill-bar1);
 }

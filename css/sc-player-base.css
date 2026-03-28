@@ -22,6 +22,7 @@ sc-player .sc-tracklist.S-trmove {
 	list-style-type: "⁝⁝ ";
 }
 
+sc-player .sc-box-drop:not(.S-active) > *,
 sc-player .sc-cover-slide,
 sc-player .sc-info-toggle,
 sc-player .sc-play-toggle,
@@ -84,6 +85,11 @@ sc-player .sc-info-lirika {
 	margin: 4px;
 }
 
+sc-player .sc-bar-plying,
+sc-player .sc-bar-volume {
+	width: var(--bar-ind, 100%);
+}
+sc-player .sc-box-drop,
 sc-player .sc-play-nav {
 	display: flex;
 }
@@ -102,9 +108,8 @@ sc-player .sc-box-drop.S-active > .sc-shfl-tracks {
 	white-space: pre-line;
 	word-break: break-word;
 }
-sc-player .sc-box-drop:not(.S-active) > * {
-	display: inline-block;
-	cursor: pointer;
+sc-player .sc-box-drop.S-active {
+	flex-direction: column;
 }
 
 sc-player .sc-track {
