@@ -1,0 +1,3 @@
+[submodule "maFF"]
+	path = js/maFF
+	url = https://github.com/OpenA/maFF.git
