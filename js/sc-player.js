@@ -21,7 +21,7 @@ class SCPlayer extends HTMLElement {
 		colors = 'orange'
 	}) {
 		const sc_player = super();
-		const sc_ui     = {};
+		const sc_ui     = { _t: -1 };
 		const sc_tracks = sc_ui.playlist = SCPlayer.cNode('sc-tracklist', 'sc-list');
 		const sc_title  = sc_ui.trTitle  = SCPlayer.cNode('sc-info-title');
 		const sc_artist = sc_ui.trArtist = SCPlayer.cNode('sc-info-artist');
@@ -44,7 +44,7 @@ class SCPlayer extends HTMLElement {
 		const sc_trmove = /* .......... */ SCPlayer.cNode('sc-move-tracks');
 
 		sc_player.className = `sc-player-${theme} sc-P-${variant} sc-C-${colors}`;
-		sc_ui.trkPlace = document.createTextNode('🢖 · · · · · · · · · · 🢔');
+		sc_ui.trkPlace = document.createTextNode('\xA0\xA0🢖 · · · · · · · · · · 🢔');
 		sc_dropbx.append(sc_shufl , sc_trmove);
 		sc_player.append(sc_tracks, sc_ctrlbx, sc_dropbx);
 		sc_ctrlbx.append(sc_artwrk, sc_scover, sc_tscale, sc_timein, sc_volume, sc_play, sc_inflay, sc_info);
@@ -143,7 +143,7 @@ class SCPlayer extends HTMLElement {
 
 	slideToNextCoverY(re_y = false) {
 		const { artwork } = this._scui;
-		const yMax = Math.round(artwork.scrollTopMax);
+		const yMax = Math.round(artwork.scrollHeight - artwork.clientHeight);
 		const sTop = Math.round(artwork.scrollTop);
 		let y, ry = -1, ny = yMax;
 		for (const img of artwork.children) {
@@ -157,7 +157,7 @@ class SCPlayer extends HTMLElement {
 	}
 	slideToNextCoverX(re_x = false) {
 		const { artwork } = this._scui;
-		const xMax  = Math.round(artwork.scrollLeftMax);
+		const xMax  = Math.round(artwork.scrollWidth - artwork.clientWidth);
 		const sLeft = Math.round(artwork.scrollLeft);
 		let x, rx = -1, nx = xMax;
 		for (const img of artwork.children) {
@@ -255,12 +255,17 @@ class SCPlayer extends HTMLElement {
 		case 'drop':
 			this.addTracksFromFiles(e.dataTransfer.files);
 		case 'dragleave':
-			clist.remove('S-active');
-			place.textContent = '';
+			this._scui._t = setTimeout(() => {
+				clist.remove('S-active');
+				place.textContent = '';
+			}, 150);
 			break;
 		case 'dragover':
-			clist.add('S-active');
-			place.textContent = `${SCPlayer.SUPPORTED_FORMATS.join(' ')} + jpg png webp`;
+			if(!clist.contains('S-active')) {
+				clist.add('S-active');
+				place.textContent = `${SCPlayer.SUPPORTED_FORMATS.join(' ')} + jpg png webp`;
+			}
+			clearTimeout(this._scui._t);
 			break;
 		}
 	}

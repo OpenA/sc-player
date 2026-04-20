@@ -148,7 +148,7 @@
 }
 .sc-player-standart .sc-track:after {
 	position: absolute;
-	right: 5px;
+	right: 5px; top: 3px;
 }
 
 /* Add track btn and drop-box overlay */
