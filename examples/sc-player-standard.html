@@ -8,16 +8,22 @@
 	<link rel="stylesheet" type="text/css" href="../css/sc-player-standard/standart-skel.css">
 	<link rel="stylesheet" type="text/css" href="../css/sc-player-standard/standart-colors.css">
 	<script type="text/javascript" src="../js/sc-player.js"></script>
+	<script type="text/javascript" src="../js/maFF/metadata-parser.js"></script>
+	<script type="text/javascript" src="../js/maFF/midora.js"></script>
 	<script type="text/javascript">
 		document.addEventListener('DOMContentLoaded', () => {
 			const cv = location.hash.substring(1);
 			const fx = document.body.querySelector('.fx-cont');
-
-			let vid = cv.startsWith('wide') ? 'wide' : cv.startsWith('horiz') ? 'horizontal' : 'vertical';
-			let col = cv.endsWith  ('blue') ? 'blue' : cv.endsWith  ('green') ? 'green'      : 'orange';
-
-			const sc = new SCPlayer({ variant: vid, colors: col });
-			const li = fx.querySelectorAll(`li.P-${vid}, li.C-${col}`);
+			const o  = {
+				variant: cv.startsWith('wide') ? 'wide' : cv.startsWith('horiz') ? 'horizontal' : 'vertical',
+				colors : cv.endsWith  ('blue') ? 'blue' : cv.endsWith  ('green') ? 'green'      : 'orange'  ,
+			}
+			if (typeof MidoraAudio !== 'undefined') {
+				o.audio = new MidoraAudio();
+				SCPlayer.SUPPORTED_FORMATS.push('wav','aif','aiff');
+			}
+			const sc = new SCPlayer(o);
+			const li = fx.querySelectorAll(`li.P-${o.variant}, li.C-${o.colors}`);
 
 			li[0].classList.add('selected');
 			li[1].classList.add('selected');
@@ -34,9 +40,9 @@
 					sc.classList.replace(`sc-${sel}`, `sc-${opt}`);
 					el.classList.add('selected');
 					location.hash = `${
-						opt.startsWith('P') ? (vid = opt.substring(2)) : vid
+						opt.startsWith('P') ? (o.variant = opt.substring(2)) : o.variant
 					}-${
-						opt.startsWith('C') ? (col = opt.substring(2)) : col
+						opt.startsWith('C') ? (o.colors = opt.substring(2)) : o.colors
 					}`;
 				}
 			};

@@ -14,14 +14,14 @@ class SCPlayer extends HTMLElement {
 	constructor({
 		with_local_files = true,
 		with_extra_controls = true,
-		single_audio_instance = false,
+		audio = new Audio,
 		has_touch = ('ontouchstart' in window),
 		theme = 'standart',
 		variant = 'horizontal',
 		colors = 'orange'
 	}) {
 		const sc_player = super();
-		const sc_ui     = { _t: -1 };
+		const sc_ui     = {};
 		const sc_tracks = sc_ui.playlist = SCPlayer.cNode('sc-tracklist', 'sc-list');
 		const sc_title  = sc_ui.trTitle  = SCPlayer.cNode('sc-info-title');
 		const sc_artist = sc_ui.trArtist = SCPlayer.cNode('sc-info-artist');
@@ -80,10 +80,11 @@ class SCPlayer extends HTMLElement {
 		sc_volume.addEventListener(has_touch ? 'touchstart' : 'mousedown', e => e.preventDefault());
 		sc_tscale.addEventListener(has_touch ? 'touchstart' : 'mousedown', e => e.preventDefault());
 
-		sc_ui.currTrack = null;
-		sc_ui.audio = single_audio_instance ? SCPlayer.audio : new Audio;
-		sc_ui.audio.autoplay = true;
+		if ((this._audio = audio));
+			audio.autoplay = true;
 
+		this._dly  = this._num = -1;
+		this._its  = this._rid =  0;
 		this._scui = sc_ui;
 		this._guid = ++SCPlayer._instances_count;
 		this._cycl = false;
@@ -106,10 +107,10 @@ class SCPlayer extends HTMLElement {
 		return db;
 	}
 
-	get play_mode( ) { return this._cycl | (this._scui.audio.loop << 1); }
+	get play_mode( ) { return this._cycl | (this._audio.loop << 1); }
 	set play_mode(m) {
-		this._cycl /*~~~~~~*/ = (m & 0x3) === 1;
-		this._scui.audio.loop = (m & 0x3) === 2;
+		this._cycl /*~*/ = (m & 0x3) === 1;
+		this._audio.loop = (m & 0x3) === 2;
 	}
 /**
  * @param {[File]} files - if you use blob
@@ -195,7 +196,7 @@ class SCPlayer extends HTMLElement {
  * @param {String} dbKey
  */
 	playMediaSource(dbKey) {
-		const { audio:au, trTitle, trArtist, trLirika, artwork } = this._scui;
+		const { ctrlBox, trTitle, trArtist, trLirika, artwork } = this._scui;
 		const {
 			url = '', artist = '', title = '', album = '', cover = '', comment = ''
 		} = SCPlayer.metadata_db.get(dbKey) || {};
@@ -209,40 +210,45 @@ class SCPlayer extends HTMLElement {
 		let cover_art = artwork.children[cover];
 		if (cover_art)  artwork.scroll({ smooth: 'behavior', top: cover_art.offsetTop });
 
-		au.onpause = au.onloadedmetadata =
-		au.onended = au.ontimeupdate =
-		au.onplay = url ? e => this._onMediaHandler(e) : null;
-		au.src = url;
+		/*~~~~*/ ctrlBox.classList.remove('S-played', 'S-paused');
+		if (url) ctrlBox.classList.add   ('S-played');
+
+		this._audio.src = url;
+		this._its = 0;
+		this._rid = (url && this._rid) || requestAnimationFrame(t => this._onMediaHandler(t));
 	}
 
 /**
  * @param {Event} e
  */
-	_onMediaHandler({ type }) {
-		const { currTrack, timekind, ctrlBox, audio, playBar } = this._scui;
-		const { currentTime: ms, duration: d } = audio;
+	_onMediaHandler(t = 0, ready = false) {
+		const { currTrack, timekind, playBar /****/ } = this._scui;
+		const { currentTime: ms, duration: d, ended } = this._audio;
+		const loaded = (d > 0);
 
-		switch (type) {
-		case 'loadedmetadata':
+		if(!ready && loaded) {
 			currTrack.dataset.duration = // vv v
 			timekind.dataset.duration = SCPlayer.timeCalc(d);
-			break;
-		case 'timeupdate':
-			// no effeck
-			if(!timekind.classList.contains('S-hold')) {
-				timekind.dataset.pos = SCPlayer.timeCalc(ms);
-				playBar.style.setProperty('--bar-ind',`${d ? Math.floor(ms/d*10000)/100 : 0}%`);
+			timekind.dataset.pos = '00:00';
+		}
+		if (this._its !== -1) {
+			let ind = Math.floor(ms/d*10000)/100;
+			if ((ms - this._its) >= 1) {
+				timekind.dataset.pos = SCPlayer.timeCalc(
+					(this._its = ms)
+				);
 			}
-			break;
-		case 'play' : ctrlBox.classList.remove('S-paused');
-		case 'pause': ctrlBox.classList.add   (`S-${type.substring(0,4)}ed`); break;
-		case 'ended': ctrlBox.classList.remove('S-paused', 'S-played');
-			//
+			playBar.style.setProperty('--bar-ind',`${loaded ? ind : 0}%`);
+		}
+		if (ended) {
+			this._rid = 0;
 			let nxt = currTrack.nextElementSibling || (
 				this._cycl ? currTrack.parentNode.firstElementChild : null
 			);
 			this.selectTrack(nxt);
-			break;
+		} else
+		if (this._rid) {
+			this._rid = requestAnimationFrame(t => this._onMediaHandler(t, loaded));
 		}
 	}
 /**
@@ -255,7 +261,7 @@ class SCPlayer extends HTMLElement {
 		case 'drop':
 			this.addTracksFromFiles(e.dataTransfer.files);
 		case 'dragleave':
-			this._scui._t = setTimeout(() => {
+			this._dly = setTimeout(() => {
 				clist.remove('S-active');
 				place.textContent = '';
 			}, 150);
@@ -265,7 +271,7 @@ class SCPlayer extends HTMLElement {
 				clist.add('S-active');
 				place.textContent = `${SCPlayer.SUPPORTED_FORMATS.join(' ')} + jpg png webp`;
 			}
-			clearTimeout(this._scui._t);
+			clearTimeout(this._dly);
 			break;
 		}
 	}
@@ -274,7 +280,7 @@ class SCPlayer extends HTMLElement {
  */
 	_onClickHandler({ target: el }) {
 
-		const { audio, playlist, currTrack } = this._scui;
+		const { playlist, currTrack } = this._scui;
 
 		const pp = el.parentNode,
 			 ccl = el.classList,
@@ -289,8 +295,14 @@ class SCPlayer extends HTMLElement {
 				/**/;
 			break;
 		case 'sc-play-toggle':
-			/**/ if (pcl.contains('S-paused')) audio.play();
-			else if (pcl.contains('S-played')) audio.pause();
+			if (pcl.contains('S-played'))
+				if (pcl.toggle('S-paused')) {
+					this._audio.pause();
+					this._rid = 0;
+				} else {
+					this._audio.play();
+					this._rid = requestAnimationFrame(t => this._onMediaHandler(t, true));
+				}
 			else if ((el = playlist.children[0]))
 				this.selectTrack(el);
 			break;
@@ -308,9 +320,9 @@ class SCPlayer extends HTMLElement {
 			break;
 		case 'sc-play-mode':
 			{
-				let i = this._cycl - (audio.loop - 1);
-				let c = this._cycl = (i === 1);
-				let l = audio.loop = (i === 2);
+				let i = this._cycl - (this._audio.loop - 1);
+				let c = this._cycl /*~*/ = (i === 1);
+				let l = this._audio.loop = (i === 2);
 				el.title        = SCPlayer.PLAY_MODE_SET[i].title;
 				el.dataset.mode = SCPlayer.PLAY_MODE_SET[i].name;
 			}
@@ -371,12 +383,16 @@ class SCPlayer extends HTMLElement {
  */
 	_onBarChange({clientX, clientY}, is_play_bar = false) {
 
-		const { audio, timekind, volume, playBar, volBar } = this._scui;
-		const bar = is_play_bar ? playBar  : volBar;
-		const inc = is_play_bar ? timekind : volume;
+		const { timekind, volume, playBar, volBar } = this._scui;
+		const bar = is_play_bar ? playBar: volBar;
+
+		if (is_play_bar)
+			this._its = -1; // stops indicator update
 
 		bar.style.setProperty('--bar-ind','100%'); // reset bar to 100% w:h
-		inc.classList.add('S-hold'); // stops indicator update
+
+		if (!is_play_bar)
+			volume.classList.add('S-hold');
 
 		const { left:sx, width:maxw, // get bar coords and sizes 
 				top:sy, height:maxh } = bar.getBoundingClientRect();
@@ -386,15 +402,15 @@ class SCPlayer extends HTMLElement {
 			let p = (v * 100).toFixed(2);
 			bar.style.setProperty('--bar-ind',`${p}%`);
 			if (is_play_bar) {
-				timekind.dataset.pos = SCPlayer.timeCalc((v *= audio.duration));
+				timekind.dataset.pos = SCPlayer.timeCalc((v *= this._audio.duration));
 				if (is_end)
-					audio.currentTime = v;
+					this._audio.currentTime = this._its = v;
 			} else {
 				volume.dataset.percent = p.substring(0, p.length - 3);
-				audio.volume = v;
+				this._audio.volume = v;
+				if (is_end)
+					volume.classList.remove('S-hold');
 			}
-			if (is_end)
-				inc.classList.remove('S-hold');
 		}
 		SCPlayer._bindPointer(onMove); onMove({clientX, clientY});
 	}
