@@ -118,7 +118,7 @@ sc-player .sc-track {
 	overflow: hidden;
 }
 sc-player .sc-track[data-artist]:before {
-	content: "«" attr(data-artist) "» ";
+	content: attr(data-artist) " ⬞ ";
 }
 sc-player .sc-track[data-duration]:after {
 	content: attr(data-duration);

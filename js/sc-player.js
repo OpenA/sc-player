@@ -14,7 +14,6 @@ class SCPlayer extends HTMLElement {
 	constructor({
 		with_local_files = true,
 		with_extra_controls = true,
-		audio = new Audio,
 		has_touch = ('ontouchstart' in window),
 		theme = 'standart',
 		variant = 'horizontal',
@@ -80,9 +79,6 @@ class SCPlayer extends HTMLElement {
 		sc_volume.addEventListener(has_touch ? 'touchstart' : 'mousedown', e => e.preventDefault());
 		sc_tscale.addEventListener(has_touch ? 'touchstart' : 'mousedown', e => e.preventDefault());
 
-		if ((this._audio = audio));
-			audio.autoplay = true;
-
 		this._dly  = this._num = -1;
 		this._its  = this._rid =  0;
 		this._scui = sc_ui;
@@ -95,9 +91,9 @@ class SCPlayer extends HTMLElement {
 		});
 	}
 
-	static get audio() {
-		const au = new Audio;
-		Object.defineProperty(this, 'audio', { enumerable: true, value: au });
+	get _audio() {
+		const au = new Audio; au.autoplay = true;
+		Object.defineProperty(this, '_audio', { configurable: true, value: au });
 		return au;
 	}
 
@@ -134,7 +130,7 @@ class SCPlayer extends HTMLElement {
 				f.type.startsWith('video') || f.type.startsWith('binary')
 			) {
 				const info = SCPlayer.parseTrackName(f.name, mime);
-				if (!(sid in playlist.children) && info.is_valid) {
+				if (!(sid in playlist.children) && info.mType) {
 					playlist.append( SCPlayer.cItemTrack(sid, f, info) );
 					playlist.classList.add('H-next');
 				}
@@ -175,47 +171,52 @@ class SCPlayer extends HTMLElement {
  * @param {HTMLElement} track
  */
 	selectTrack(track) {
-		const { currTrack, playlist: { classList: navcl } } = this._scui;
+		const { ctrlBox: { classList: ctl }, currTrack,
+		       playlist: { classList: nav } } = this._scui;
 
 		if (currTrack)
 			currTrack.classList.remove('S-current');
-		navcl.remove('H-prev', 'H-next');
+		nav.remove('H-prev'  , 'H-next'  );
+		ctl.remove('S-played', 'S-paused');
 
-		let key = '';
+		let data, src = '';
 		if((this._scui.currTrack = track)) {
-			key = track.id.substring(4 + (this._guid > 9));
-			/***/ track.classList.add('S-current');
-			//
-			if (track.previousElementSibling) navcl.add('H-prev');
-			if (track.nextElementSibling    ) navcl.add('H-next');
+			data = this.getMetadata(
+				track.id.substring(4 + (this._guid > 9))
+			);
+			/**/track.classList.add('S-current');
+			if (track.previousElementSibling) nav.add('H-prev');
+			if (track.nextElementSibling    ) nav.add('H-next');
+			if (data && (src = data.srcUrl) ) ctl.add('S-played');
 		}
-		this.playMediaSource(key);
+		this.updMediaInfo(data || {});
+		this._audio.src = src;
+		this._its = 0;
+		this._rid = (src && this._rid) || requestAnimationFrame(t => this._onMediaHandler(t));
 	}
 
 /**
  * @param {String} dbKey
  */
-	playMediaSource(dbKey) {
-		const { ctrlBox, trTitle, trArtist, trLirika, artwork } = this._scui;
-		const {
-			url = '', artist = '', title = '', album = '', cover = '', comment = ''
-		} = SCPlayer.metadata_db.get(dbKey) || {};
+	getMetadata(dbKey) {
+		return SCPlayer.metadata_db.get(dbKey);
+	}
+
+	updMediaInfo({
+		artist = '', title = '', album = '', coverId = '', comment = '', lyrics = ''
+	}) {
+		const { trTitle, trArtist, trLirika, artwork } = this._scui;
 
 		// upd info
 		trArtist.textContent = artist;
 		trTitle .textContent = title;
-		trLirika.textContent = comment;
+		trLirika.textContent = comment +'\n\n'+ lyrics;
 		trLirika.dataset.album = album;
 		// 
-		let cover_art = artwork.children[cover];
-		if (cover_art)  artwork.scroll({ smooth: 'behavior', top: cover_art.offsetTop });
-
-		/*~~~~*/ ctrlBox.classList.remove('S-played', 'S-paused');
-		if (url) ctrlBox.classList.add   ('S-played');
-
-		this._audio.src = url;
-		this._its = 0;
-		this._rid = (url && this._rid) || requestAnimationFrame(t => this._onMediaHandler(t));
+		if (coverId) {
+			const coverImg = artwork.children[`sc${this._guid}_${coverId}`];
+			if (  coverImg ) artwork.scroll({ smooth: 'behavior', top: coverImg.offsetTop });
+		}
 	}
 
 /**
@@ -428,19 +429,20 @@ class SCPlayer extends HTMLElement {
 	}
 
 	static parseTrackName(name = '', mime = '') {
-		let [_, num = '',
-			 artist = '',
-			  title = (name || `${Date.now()}`),
-			    ext = (mime === 'mpeg' ? 'mp3' : mime === 'x-matroska'   ? 'mka' :
-				       mime === 'mp4'  ? 'm4a' : mime === 'octet-stream' ? 'bin' : mime)
-			] = name.match(
-				/^(?:(\d+)[. -]+)?(?:(.+)\s+[—-]+\s+)?(.+)\.([A-z0-9]+)$/
-			) || [];
-		// ===
-		ext = ext.toLowerCase();
-		return {
-			is_valid: this.SUPPORTED_FORMATS.includes(ext), num, artist, title, ext
-		};
+		const o = Object.create(null);
+		const m = name.match(
+			/^(?:(?:\d+-)?(\d+)[. -]+)?(?:(.+)\s+[—-]+\s+)?(.+)\.([A-z0-9]+)$/
+		);
+		o.tracknum = (m && m[1]) && parseInt(m[1]) || 0;
+		o.artist   = (m && m[2]) || '';
+		o.title    = (m && m[3]) || name || `${Date.now()}`;
+		let ext    = (m && m[4]) || (
+			mime === 'mpeg' ? 'mp3' : mime === 'x-matroska'   ? 'mka' :
+			mime === 'mp4'  ? 'm4a' : mime === 'octet-stream' ? 'bin' : mime
+		);
+		if (this.SUPPORTED_FORMATS.includes((ext = ext.toLowerCase())))
+			o.mType = ext;
+		return o;
 	}
 /** Create cover item
  * @param {String} sid
@@ -449,14 +451,14 @@ class SCPlayer extends HTMLElement {
 	static cItemCover(sid, file) {
 		const img = new Image;
 		const key = sid.substring(sid.indexOf('_') + 1);
-		let { url = '' } = this.metadata_db.get(key) || {};
+		const obj = this.metadata_db.get(key) || Object.create(null);
 
-		if(!url) {
-			url = URL.createObjectURL(file);
-			this.metadata_db.set(key, { url });
+		if(!obj.src) {
+			obj.src = URL.createObjectURL(file);
+			this.metadata_db.set(key, obj);
 		}
 		img.id  = sid;
-		img.src = url;
+		img.src = obj.src;
 		return img;
 	}
 /** Create track item
@@ -474,7 +476,7 @@ class SCPlayer extends HTMLElement {
 		if(info.artist)
 			trk.dataset.artist = info.artist;
 		if(!this.metadata_db.has(key)) {
-			info.url = URL.createObjectURL(file);
+			info.srcUrl = URL.createObjectURL(file);
 			this.metadata_db.set(key, info);
 		}
 		return trk;

@@ -191,7 +191,11 @@
 	border-radius: 5px 5px 0 0;
 	background-position: left bottom;
 }
-.sc-player-oldband .sc-info-overlay {
+.sc-player-oldband :not(.S-detail) > .sc-info-overlay > .sc-info-lirika {
+	visibility: hidden;
+}
+.sc-player-oldband :not(.S-detail) > .sc-info-overlay {
+	overflow: hidden;
 	left: 105px; top: 0;
 	right: 55px; bottom: 45px;
 	visibility: visible;
@@ -209,10 +213,13 @@
 	font-variant: petite-caps;
 	color: var(--bar-fill);
 }
-.sc-player-oldband .sc-info-lirika:not(:empty) {
+.sc-player-oldband .S-detail > .sc-info-overlay {
 	background-color: var(--art-fill);
 	border-radius: 3px;
-	margin-top: 20px;
+}
+.sc-player-oldband .sc-info-lirika {
+	border-top: 1px dashed gray;
+	padding-top: 4px;
 }
 .sc-player-oldband .sc-info-artist:before {
 	content: 'by ';

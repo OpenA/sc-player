@@ -10,20 +10,17 @@
 	<script type="text/javascript" src="../js/sc-player.js"></script>
 	<script type="text/javascript" src="../js/maFF/metadata-parser.js"></script>
 	<script type="text/javascript" src="../js/maFF/midora.js"></script>
+	<script type="text/javascript" src="../js/sc-module-integration.js"></script>
 	<script type="text/javascript">
 		document.addEventListener('DOMContentLoaded', () => {
 			const cv = location.hash.substring(1);
 			const fx = document.body.querySelector('.fx-cont');
-			const o  = {
-				variant: cv.startsWith('wide') ? 'wide' : cv.startsWith('horiz') ? 'horizontal' : 'vertical',
-				colors : cv.endsWith  ('blue') ? 'blue' : cv.endsWith  ('green') ? 'green'      : 'orange'  ,
-			}
-			if (typeof MidoraAudio !== 'undefined') {
-				o.audio = new MidoraAudio();
-				SCPlayer.SUPPORTED_FORMATS.push('wav','aif','aiff');
-			}
-			const sc = new SCPlayer(o);
-			const li = fx.querySelectorAll(`li.P-${o.variant}, li.C-${o.colors}`);
+
+			let variant = cv.startsWith('wide') ? 'wide' : cv.startsWith('horiz') ? 'horizontal' : 'vertical';
+			let colors  = cv.endsWith  ('blue') ? 'blue' : cv.endsWith  ('green') ? 'green'      : 'orange'  ;
+
+			const sc = new SCPlayer({ variant, colors });
+			const li = fx.querySelectorAll(`li.P-${variant}, li.C-${colors}`);
 
 			li[0].classList.add('selected');
 			li[1].classList.add('selected');
@@ -40,9 +37,9 @@
 					sc.classList.replace(`sc-${sel}`, `sc-${opt}`);
 					el.classList.add('selected');
 					location.hash = `${
-						opt.startsWith('P') ? (o.variant = opt.substring(2)) : o.variant
+						opt.startsWith('P') ? (variant = opt.substring(2)) : variant
 					}-${
-						opt.startsWith('C') ? (o.colors = opt.substring(2)) : o.colors
+						opt.startsWith('C') ? (colors = opt.substring(2)) : colors
 					}`;
 				}
 			};
